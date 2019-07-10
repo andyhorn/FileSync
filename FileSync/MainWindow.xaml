@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileSync"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="FileSync" Height="450" Width="800">
+    <Grid Background="#71A2B6">
         <Grid.RowDefinitions>
             <RowDefinition Height="5"/>
             <RowDefinition Height="*"/>
@@ -29,19 +29,26 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"
-                        Background="#EDEDED">
-                <Button Content="Select Files" Margin="5" Padding="2" Name="ButtonSelectFiles"/>
-                <Button Content="Sync" Margin="5" Padding="2" Name="ButtonSync"/>
+            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Content="Select Files" Margin="0 2" Padding="5" Name="ButtonSelectFiles"/>
             </StackPanel>
 
-            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical"
-                        Background="#EDEDED">
-                <ComboBox Name="ComboBoxSyncOptions" Margin="5"></ComboBox>
+            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label Content="Sync Options: " VerticalAlignment="Center"/>
+                <ComboBox Name="ComboBoxSyncOptions" ItemsSource="{Binding Options}"
+                          Margin="0 2">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <Label Content="{Binding Name}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
             </StackPanel>
 
-            <Label Grid.Row="0" Grid.Column="0"
-                   Content="Files" Background="#EDEDED"/>
+            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <Button Content="Sync" Margin="0 2" Padding="15 5" Name="ButtonSync"/>
+            </StackPanel>
 
             <Border BorderBrush="Black" BorderThickness="1"
                     Grid.Row="1" Grid.Column="0">
@@ -51,8 +58,8 @@
                         <GridView>
                             <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
                             <GridViewColumn Header="Folder" DisplayMemberBinding="{Binding Directory}"/>
-                            <GridViewColumn Header="Modified Date" DisplayMemberBinding="{Binding LastModified}"/>
-                            <GridViewColumn Header="Size (KB)" DisplayMemberBinding="{Binding Size}"/>
+                            <GridViewColumn Header="Modified Date" DisplayMemberBinding="{Binding LastWriteTime}"/>
+                            <GridViewColumn Header="Size (Bytes)" DisplayMemberBinding="{Binding Length}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>

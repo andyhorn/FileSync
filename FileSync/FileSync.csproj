@@ -61,7 +61,9 @@
     <Compile Include="Models\File.cs" />
     <Compile Include="Models\IFile.cs" />
     <Compile Include="Models\ISyncEngine.cs" />
+    <Compile Include="Models\ISyncOption.cs" />
     <Compile Include="Models\SyncEngine.cs" />
+    <Compile Include="Models\SyncOption.cs" />
     <Compile Include="ViewModels\IMainWindowViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="MainWindow.xaml">

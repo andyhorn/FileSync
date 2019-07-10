@@ -10,14 +10,14 @@ namespace FileSync.Models
 {
     public class SyncEngine : ISyncEngine
     {
-        public void Sync(ICollection<IFile> files, DirectoryInfo destination, SyncOption option)
+        public void Sync(ICollection<FileInfo> files, DirectoryInfo destination, SyncOption option)
         {
-            switch(option)
+            switch(option.Type)
             {
-                case SyncOption.CopyAll:
+                case SyncType.CopyAll:
                     SyncAll(files, destination);
                     break;
-                case SyncOption.CopyNew:
+                case SyncType.CopyNew:
                     SyncNew(files, destination);
                     break;
                 default:
@@ -25,28 +25,37 @@ namespace FileSync.Models
             }
         }
 
-        private void SyncAll(ICollection<IFile> files, DirectoryInfo destination)
+        private void SyncAll(ICollection<FileInfo> files, DirectoryInfo destination)
         {
             foreach(var f in files)
             {
-                var fileInfo = new FileInfo(f.Name);
-                FileHelper.CopyFile(fileInfo, destination);
+                //var fileInfo = new FileInfo(f.Name);
+                FileHelper.CopyFile(f, destination);
             }
         }
 
-        private void SyncNew(ICollection<IFile> files, DirectoryInfo destination)
+        private void SyncNew(ICollection<FileInfo> files, DirectoryInfo destination)
         {
-            var destinationFiles = destination.EnumerateFiles();
-            var subdirs = destination.EnumerateDirectories();
+            //var destinationFiles = destination.EnumerateFiles();
+            var currentFiles = destination.GetFiles();
+            //var subdirs = destination.EnumerateDirectories();
 
             foreach(var f in files)
             {
-                var info = new FileInfo(f.Name);
+                var existingFile = currentFiles.FirstOrDefault(x => x.Name == f.Name);
+                var copy = true;
 
-                if(!destinationFiles.Contains(info) ||
-                    destinationFiles.First(x => x.Name == info.Name).LastWriteTime < f.LastModified)
+                if(existingFile != null)
                 {
-                    FileHelper.CopyFile(info, destination);
+                    if(existingFile.LastWriteTime >= f.LastWriteTime)
+                    {
+                        copy = false;
+                    }
+                }
+
+                if(copy)
+                {
+                    FileHelper.CopyFile(f, destination);
                 }
             }
         }

@@ -14,24 +14,28 @@ namespace FileSync.ViewModels
 {
     public class MainWindowViewModel : IMainWindowViewModel, INotifyPropertyChanged
     {
-        private ObservableCollection<IFile> _files;
+        private ObservableCollection<FileInfo> _files;
         private ISyncEngine _engine;
         public IList<SyncOption> Options { get; set; }
         public SyncOption SelectedOption { get; set; }
-        public ObservableCollection<IFile> Files { get => _files; set => _files = value; }
+        public ObservableCollection<FileInfo> Files { get => _files; set => _files = value; }
         public DirectoryInfo Directory { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindowViewModel()
         {
-            Options = new List<SyncOption>
-            {
-                SyncOption.CopyAll,
-                SyncOption.CopyNew
-            };
+            Options = new List<SyncOption>();
 
-            Files = new ObservableCollection<IFile>();
+            foreach(SyncType type in Enum.GetValues(typeof(SyncType)))
+            {
+                var option = new SyncOption(type);
+                Options.Add(option);
+            }
+
+            SelectedOption = Options[0];
+
+            Files = new ObservableCollection<FileInfo>();
             _engine = new SyncEngine();
         }
 

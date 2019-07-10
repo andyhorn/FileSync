@@ -1,4 +1,5 @@
-﻿using FileSync.ViewModels;
+﻿using FileSync.Models;
+using FileSync.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace FileSync
         private IMainWindowViewModel model;
         private Button SelectFilesButton, SyncButton;
         private ListView FileListView;
+        private ComboBox SyncOptionsComboBox;
         public MainWindow()
         {
             model = new MainWindowViewModel();
@@ -33,6 +35,13 @@ namespace FileSync
             SelectFilesButton = ButtonSelectFiles;
             SyncButton = ButtonSync;
             FileListView = ListViewFileList;
+            SyncOptionsComboBox = ComboBoxSyncOptions;
+
+            SyncOptionsComboBox.SelectedItem = model.SelectedOption;
+
+            FileListView.ItemsSource = model.Files;
+
+            DataContext = model;
 
             SelectFilesButton.Click += new RoutedEventHandler((sender, target) =>
             {
@@ -44,9 +53,10 @@ namespace FileSync
                 model.Sync();
             });
 
-            FileListView.ItemsSource = model.Files;
-
-            DataContext = model;
+            SyncOptionsComboBox.SelectionChanged += new SelectionChangedEventHandler((sender, target) =>
+            {
+                model.SelectedOption = SyncOptionsComboBox.SelectedItem as SyncOption;
+            });
         }
         
     }

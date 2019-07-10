@@ -12,7 +12,7 @@ namespace FileSync.Helpers
 {
     public static class FileHelper
     {
-        public static void SelectFiles(ref ObservableCollection<IFile> list)
+        public static void SelectFiles(ref ObservableCollection<FileInfo> list)
         {
             var dialog = new OpenFileDialog
             {
@@ -27,17 +27,8 @@ namespace FileSync.Helpers
 
                 foreach(var name in fileNames)
                 {
-                    var fileInfo = new FileInfo(name);
-
-                    var file = new Models.File
-                    {
-                        Name = fileInfo.Name,
-                        Size = fileInfo.Length,
-                        Directory = fileInfo.DirectoryName,
-                        LastModified = fileInfo.LastWriteTime
-                    };
-
-                    list.Add(file);
+                    var info = new FileInfo(name);
+                    list.Add(info);
                 }
             }
         }
@@ -60,9 +51,9 @@ namespace FileSync.Helpers
 
         public static void CopyFile(FileInfo file, DirectoryInfo destination)
         {
-            var destPath = destination.FullName + file.Name;
+            var path = $"{destination.FullName}\\{file.Name}";
 
-            file.CopyTo(destPath);
+            file.CopyTo(path, true);
         }
     }
 }
