@@ -21,8 +21,6 @@ namespace FileSync.Helpers
 
             if(dialog.ShowDialog() == true)
             {
-                //var list = new ObservableCollection<IFile>();
-
                 list.Clear();
 
                 var fileNames = dialog.FileNames;
@@ -41,11 +39,7 @@ namespace FileSync.Helpers
 
                     list.Add(file);
                 }
-
-                //return list;
             }
-
-            //return null;
         }
 
         public static DirectoryInfo SelectDirectory()
@@ -62,6 +56,13 @@ namespace FileSync.Helpers
             }
 
             return null;
+        }
+
+        public static void CopyFile(FileInfo file, DirectoryInfo destination)
+        {
+            var destPath = destination.FullName + file.Name;
+
+            file.CopyTo(destPath);
         }
     }
 }

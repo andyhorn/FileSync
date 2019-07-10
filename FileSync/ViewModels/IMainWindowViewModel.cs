@@ -12,7 +12,8 @@ namespace FileSync.ViewModels
 {
     public interface IMainWindowViewModel
     {
-        IList<string> Options { get; set; }
+        IList<SyncOption> Options { get; set; }
+        SyncOption SelectedOption { get; set; }
         //IList<FileInfo> Files { get; set; }
         //IList<IFile> Files { get; set; }
         ObservableCollection<IFile> Files { get; set; }

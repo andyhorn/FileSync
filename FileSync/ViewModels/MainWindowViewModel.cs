@@ -15,7 +15,9 @@ namespace FileSync.ViewModels
     public class MainWindowViewModel : IMainWindowViewModel, INotifyPropertyChanged
     {
         private ObservableCollection<IFile> _files;
-        public IList<string> Options { get; set; }
+        private ISyncEngine _engine;
+        public IList<SyncOption> Options { get; set; }
+        public SyncOption SelectedOption { get; set; }
         public ObservableCollection<IFile> Files { get => _files; set => _files = value; }
         public DirectoryInfo Directory { get; set; }
 
@@ -23,8 +25,14 @@ namespace FileSync.ViewModels
 
         public MainWindowViewModel()
         {
-            Options = new List<string>();
+            Options = new List<SyncOption>
+            {
+                SyncOption.CopyAll,
+                SyncOption.CopyNew
+            };
+
             Files = new ObservableCollection<IFile>();
+            _engine = new SyncEngine();
         }
 
         public void SelectFiles()
@@ -39,6 +47,8 @@ namespace FileSync.ViewModels
             var directory = FileHelper.SelectDirectory();
 
             Directory = directory;
+
+            _engine.Sync(_files, Directory, SelectedOption);
         }
 
         private void OnPropertyChanged(string propertyName)
