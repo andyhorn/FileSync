@@ -16,6 +16,7 @@ namespace FileSync.ViewModels
         //IList<FileInfo> Files { get; set; }
         //IList<IFile> Files { get; set; }
         ObservableCollection<IFile> Files { get; set; }
+        DirectoryInfo Directory { get; set; }
 
         void SelectFiles();
 

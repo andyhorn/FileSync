@@ -50,6 +50,9 @@
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
+                            <GridViewColumn Header="Folder" DisplayMemberBinding="{Binding Directory}"/>
+                            <GridViewColumn Header="Modified Date" DisplayMemberBinding="{Binding LastModified}"/>
+                            <GridViewColumn Header="Size (KB)" DisplayMemberBinding="{Binding Size}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>

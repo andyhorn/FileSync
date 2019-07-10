@@ -46,15 +46,6 @@ namespace FileSync
 
             FileListView.ItemsSource = model.Files;
 
-            //model.Files.Add(new System.IO.FileInfo("./Test.txt"));
-            model.Files.Add(new Models.File
-            {
-                Name = "Test Name",
-                Directory = "Test Directory",
-                Size = 1234567890,
-                LastModified = DateTime.Today
-            });
-
             DataContext = model;
         }
         
