@@ -7,6 +7,53 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="1"
+              Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"
+                        Background="#EDEDED">
+                <Button Content="Select Files" Margin="5" Padding="2" Name="ButtonSelectFiles"/>
+                <Button Content="Sync" Margin="5" Padding="2" Name="ButtonSync"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical"
+                        Background="#EDEDED">
+                <ComboBox Name="ComboBoxSyncOptions" Margin="5"></ComboBox>
+            </StackPanel>
+
+            <Label Grid.Row="0" Grid.Column="0"
+                   Content="Files" Background="#EDEDED"/>
+
+            <Border BorderBrush="Black" BorderThickness="1"
+                    Grid.Row="1" Grid.Column="0">
+                <ListView Name="ListViewFileList"
+                          ItemsSource="{Binding Files}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

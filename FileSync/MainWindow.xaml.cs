@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FileSync.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,42 @@ namespace FileSync
     /// </summary>
     public partial class MainWindow : Window
     {
+        private IMainWindowViewModel model;
+        private Button SelectFilesButton, SyncButton;
+        private ListView FileListView;
         public MainWindow()
         {
+            model = new MainWindowViewModel();
+
             InitializeComponent();
+
+            SelectFilesButton = ButtonSelectFiles;
+            SyncButton = ButtonSync;
+            FileListView = ListViewFileList;
+
+            SelectFilesButton.Click += new RoutedEventHandler((sender, target) =>
+            {
+                model.SelectFiles();
+            });
+
+            SyncButton.Click += new RoutedEventHandler((sender, target) =>
+            {
+                model.Sync();
+            });
+
+            FileListView.ItemsSource = model.Files;
+
+            //model.Files.Add(new System.IO.FileInfo("./Test.txt"));
+            model.Files.Add(new Models.File
+            {
+                Name = "Test Name",
+                Directory = "Test Directory",
+                Size = 1234567890,
+                LastModified = DateTime.Today
+            });
+
+            DataContext = model;
         }
+        
     }
 }
