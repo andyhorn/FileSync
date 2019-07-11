@@ -19,5 +19,7 @@ namespace FileSync.ViewModels
         void Sync();
 
         void Clear();
+
+        void Remove(FileInfo file);
     }
 }

@@ -146,6 +146,13 @@ namespace FileSync.ViewModels
             StatusMessage = "Ready";
         }
 
+        public void Remove(FileInfo file)
+        {
+            Files.Remove(file);
+
+            OnPropertyChanged("Files");
+        }
+
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

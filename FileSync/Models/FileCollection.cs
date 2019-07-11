@@ -91,6 +91,15 @@ namespace FileSync.Models
             }
         }
 
+        public new void Remove(T item)
+        {
+            if(Items.Contains(item))
+            {
+                Items.Remove(item);
+                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            }
+        }
+
         public override event NotifyCollectionChangedEventHandler CollectionChanged;
 
         protected virtual void OnCollectionChangedMultiItem(NotifyCollectionChangedEventArgs e)
