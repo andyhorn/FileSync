@@ -6,7 +6,15 @@
         xmlns:local="clr-namespace:FileSync"
         mc:Ignorable="d"
         Title="FileSync" Height="450" Width="800">
-    <Grid Background="#71A2B6">
+
+    <Window.Resources>
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#71A2B6"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="18"/>
+        </Style>
+    </Window.Resources>
+    <Grid Background="#982649">
         <Grid.RowDefinitions>
             <RowDefinition Height="5"/>
             <RowDefinition Height="*"/>
@@ -23,6 +31,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -30,12 +39,12 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
-                <Button Content="Select Files" Margin="0 2" Padding="5" Name="ButtonSelectFiles"/>
+                <Button Content="Select Files" Margin="0 2" Padding="5" Name="ButtonSelectFiles" Style="{StaticResource ButtonStyle}"/>
             </StackPanel>
 
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label Content="Sync Options: " VerticalAlignment="Center"/>
-                <ComboBox Name="ComboBoxSyncOptions" ItemsSource="{Binding Options}"
+                <Label Content="Sync Options: " VerticalAlignment="Center" HorizontalContentAlignment="Left" Foreground="White"/>
+                <ComboBox Name="ComboBoxSyncOptions" ItemsSource="{Binding Options}" VerticalAlignment="Center"
                           Margin="0 2">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -47,7 +56,7 @@
 
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal"
                         HorizontalAlignment="Right">
-                <Button Content="Sync" Margin="0 2" Padding="15 5" Name="ButtonSync"/>
+                <Button Content="Sync" Margin="0 2" Padding="15 5" Name="ButtonSync" Style="{StaticResource ButtonStyle}"/>
             </StackPanel>
 
             <Border BorderBrush="Black" BorderThickness="1"
@@ -64,6 +73,21 @@
                     </ListView.View>
                 </ListView>
             </Border>
+
+            <Grid Grid.Row="2" Grid.Column="0">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Status:" Foreground="White"/>
+                    <Label Content="{Binding StatusMessage}" Foreground="White"/>
+                </StackPanel>
+                <ProgressBar Name="ProgressBarSync" 
+                             Height="10" Width="500" 
+                             HorizontalAlignment="Right"
+                             Margin="0 0 5 0"
+                             Background="#EFEFEF"
+                             Maximum="{Binding Maximum}"
+                             Value="{Binding Progress}"
+                             Minimum="{Binding Minimum}"/>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

@@ -14,10 +14,12 @@ namespace FileSync.ViewModels
     {
         IList<SyncOption> Options { get; set; }
         SyncOption SelectedOption { get; set; }
-        //IList<FileInfo> Files { get; set; }
-        //IList<IFile> Files { get; set; }
         ObservableCollection<FileInfo> Files { get; set; }
-        DirectoryInfo Directory { get; set; }
+        string StatusMessage { get; set; }
+        int Progress { get; set; }
+        int Maximum { get; set; }
+        int Minimum { get; set; }
+        //DirectoryInfo Directory { get; set; }
 
         void SelectFiles();
 

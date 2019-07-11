@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -26,16 +27,18 @@ namespace FileSync
         private Button SelectFilesButton, SyncButton;
         private ListView FileListView;
         private ComboBox SyncOptionsComboBox;
+        private ProgressBar ProgressBar;
         public MainWindow()
         {
-            model = new MainWindowViewModel();
-
             InitializeComponent();
 
             SelectFilesButton = ButtonSelectFiles;
             SyncButton = ButtonSync;
             FileListView = ListViewFileList;
             SyncOptionsComboBox = ComboBoxSyncOptions;
+            ProgressBar = ProgressBarSync;
+
+            model = new MainWindowViewModel(ProgressBar);
 
             SyncOptionsComboBox.SelectedItem = model.SelectedOption;
 
@@ -49,7 +52,7 @@ namespace FileSync
             });
 
             SyncButton.Click += new RoutedEventHandler((sender, target) =>
-            {
+            {                
                 model.Sync();
             });
 

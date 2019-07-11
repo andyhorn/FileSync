@@ -14,6 +14,6 @@ namespace FileSync.Models
     }
     public interface ISyncEngine
     {
-        void Sync(ICollection<FileInfo> files, DirectoryInfo destination, SyncOption option);
+        void Sync(ICollection<FileInfo> files, DirectoryInfo destination, SyncOption option, System.Windows.Controls.ProgressBar progressBar);
     }
 }
