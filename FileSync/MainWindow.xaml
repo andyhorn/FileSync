@@ -45,7 +45,7 @@
 
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label Content="Sync New" VerticalAlignment="Center"/>
-                <Controls:ToggleSwitch OnLabel="" OffLabel="" Name="ToggleSwitchSyncAll"/>
+                <Controls:ToggleSwitch OnLabel="" OffLabel="" Name="ToggleSwitchSyncAll" OffSwitchBrush="Teal" OnSwitchBrush="Teal"/>
                 <Label Content="Sync All" VerticalAlignment="Center"/>
             </StackPanel>
 
