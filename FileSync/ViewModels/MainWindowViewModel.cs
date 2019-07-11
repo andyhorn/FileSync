@@ -71,10 +71,13 @@ namespace FileSync.ViewModels
 
         public void SelectFiles()
         {
+            // Use the file helper to select one or more files
             FileHelper.SelectFiles(ref _files);
 
+            // Set the sync flag to signify we only have files to copy, not directories
             _syncDirectories = false;
 
+            // Set an appropriate status message
             StatusMessage = $"{_files.Count} files selected.";
 
             OnPropertyChanged("Files");
@@ -82,10 +85,13 @@ namespace FileSync.ViewModels
 
         public void SelectFolders()
         {
+            // Use the file helper to select one or more directories from which to copy files
             FileHelper.SelectFolders(ref _files, ref _selectedDirectories);
 
+            // Set the flag to signify we have directories to copy along with their files
             _syncDirectories = true;
 
+            // Set an appropriate status message
             StatusMessage = $"{_files.Count} files selected.";
 
             OnPropertyChanged("Files");
@@ -93,31 +99,41 @@ namespace FileSync.ViewModels
 
         public void Sync()
         {
+            // Use the file helper to locate a save directory
             var saveDirectory = FileHelper.SelectDirectory();
 
+            // If no directory was chosen, return early
             if(saveDirectory == null)
             {
                 return;
             }
 
+            // Set an appropriate status message
             StatusMessage = $"Syncing...";
 
+            // Activate the progress bar
             _progressBar.IsIndeterminate = true;
 
+            // If we are syncing directories
             if(_syncDirectories)
             {
+                // Loop through each chosen directory
                 foreach(var directory in _selectedDirectories)
                 {
+                    // Recursively synchronize it and its subdirectories with the destination
                     SyncEngine.RecursivelySyncDirectory(directory, saveDirectory, SyncAll);
                 }
             }
             else
             {
+                // Otherwise, synchronize all chosen files with the destination
                 SyncEngine.SyncFiles(_files, saveDirectory, SyncAll);
             }
 
+            // Deactivate the progress bar
             _progressBar.IsIndeterminate = false;
 
+            // Set an appropriate status message
             StatusMessage = "Done!";
         }
 
