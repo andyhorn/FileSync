@@ -54,9 +54,9 @@ namespace FileSync
             ClearButton.Click += new RoutedEventHandler((sender, target) =>
             {
                 model.Clear();
-                FileListView.ItemsSource = null;
-                FileListView.Items.Clear();
-                FileListView.ItemsSource = model.Files;
+                //FileListView.ItemsSource = null;
+                //FileListView.Items.Clear();
+                //FileListView.ItemsSource = model.Files;
                 SetSyncButton();
             });
 
@@ -64,11 +64,6 @@ namespace FileSync
             {
                 model.SyncAll = (bool)(sender as ToggleSwitch).IsChecked;
             });
-
-            //model.Files.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler((sender, target) =>
-            //{
-            //    SetSyncButton();
-            //});
         }
 
         private void SetSyncButton()

@@ -1,7 +1,5 @@
 ﻿using FileSync.Helpers;
 using FileSync.Models;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 
@@ -9,14 +7,14 @@ namespace FileSync.ViewModels
 {
     public class MainWindowViewModel : IMainWindowViewModel, INotifyPropertyChanged
     {
-        //private ObservableCollection<FileInfo> _files;
         private FileCollection<FileInfo> _files;
+        private DirectoryInfo _selectedDirectory;
         private string _status;
         private ISyncEngine _engine;
         private int _maximum, _minimum, _progress;
         private System.Windows.Controls.ProgressBar _progressBar;
+        private bool _syncDirectories;
         public bool SyncAll { get; set; }
-        //public ObservableCollection<FileInfo> Files { get => _files; set => _files = value; }
         public FileCollection<FileInfo> Files { get => _files; set => _files = value; }
         public string StatusMessage
         {
@@ -64,7 +62,6 @@ namespace FileSync.ViewModels
             _progressBar.Maximum = 100;
             _progressBar.Value = 0;
 
-            //Files = new ObservableCollection<FileInfo>();
             _files = new FileCollection<FileInfo>();
             _engine = new SyncEngine();
 
@@ -75,6 +72,8 @@ namespace FileSync.ViewModels
         {
             FileHelper.SelectFiles(ref _files);
 
+            _syncDirectories = false;
+
             StatusMessage = $"{_files.Count} files selected.";
 
             OnPropertyChanged("Files");
@@ -82,7 +81,9 @@ namespace FileSync.ViewModels
 
         public void SelectFolders()
         {
-            FileHelper.SelectFolders(ref _files);
+            FileHelper.SelectFolders(ref _files, ref _selectedDirectory);
+
+            _syncDirectories = true;
 
             StatusMessage = $"{_files.Count} files selected.";
 
@@ -91,9 +92,9 @@ namespace FileSync.ViewModels
 
         public void Sync()
         {
-            var directory = FileHelper.SelectDirectory();
+            var saveDirectory = FileHelper.SelectDirectory();
 
-            if (directory == null)
+            if(saveDirectory == null)
             {
                 return;
             }
@@ -102,7 +103,14 @@ namespace FileSync.ViewModels
 
             _progressBar.IsIndeterminate = true;
 
-            _engine.Sync(_files, directory, SyncAll);
+            if(_syncDirectories)
+            {
+                _engine.SyncDirectory(_selectedDirectory, saveDirectory, SyncAll);
+            }
+            else
+            {
+                _engine.SyncFiles(_files, saveDirectory, SyncAll);
+            }
 
             _progressBar.IsIndeterminate = false;
 

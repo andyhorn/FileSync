@@ -1,13 +1,9 @@
 ﻿using FileSync.Models;
 using Microsoft.Win32;
-using System;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace FileSync.Helpers
 {
@@ -27,7 +23,7 @@ namespace FileSync.Helpers
             }
         }
 
-        public static void SelectFolders(ref FileCollection<FileInfo> list)
+        public static void SelectFolders(ref FileCollection<FileInfo> list, ref DirectoryInfo directory)
         {
             var dialog = new CommonOpenFileDialog
             {
@@ -38,7 +34,7 @@ namespace FileSync.Helpers
 
             if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                var directory = new DirectoryInfo(dialog.FileName);
+                directory = new DirectoryInfo(dialog.FileName);
 
                 var files = LoadSubdirectories(directory).ToList();
 
@@ -67,6 +63,21 @@ namespace FileSync.Helpers
             var path = $"{destination.FullName}\\{file.Name}";
 
             file.CopyTo(path, true);
+        }
+
+        public static void CreatePath(string pathname)
+        {
+            var dirs = pathname.Split('\\');
+
+            foreach(var dir in dirs)
+            {
+                var dirInfo = new DirectoryInfo(dir);
+
+                if(!dirInfo.Exists)
+                {
+                    dirInfo.Create();
+                }
+            }
         }
 
         private static void LoadFiles(ref FileCollection<FileInfo> list, IEnumerable<string> fileNames)
@@ -114,28 +125,22 @@ namespace FileSync.Helpers
 
         private static void FilterFiles(ref FileCollection<FileInfo> files)
         {
-            //var newList = new FileCollection<FileInfo>();
-
-            //foreach(var file in files)
-            //{
-            //    if(!_filter.Contains(file.Extension))
-            //    {
-            //        newList.Add(file);
-            //    }
-            //}
-
-            //return newList;
-
             var removable = files.Where(x => _filter.Contains(x.Extension)).ToList();
 
             if(removable?.Any() == true)
             {
                 files.RemoveRange(removable);
-                //foreach(var file in removable)
-                //{
-                //    files.Remove(file);
-                //}
             }
+        }
+
+        public static bool PathExists(string path)
+        {
+            return PathExists(new DirectoryInfo(path));
+        }
+
+        public static bool PathExists(DirectoryInfo path)
+        {
+            return path.Exists;
         }
     }
 }
