@@ -10,9 +10,6 @@
 
     <Window.Resources>
         
-        
-            
-        
     </Window.Resources>
 
     <Grid>
@@ -40,7 +37,8 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
-                <Button Content="Select Files" Margin="0 2" Padding="5" Name="ButtonSelectFiles"/>
+                <Button Content="Select Files" Margin="0 2" Padding="5" Name="ButtonSelectFiles"
+                        Style="{StaticResource AccentedSquareButtonStyle}"/>
             </StackPanel>
 
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -51,7 +49,8 @@
 
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal"
                         HorizontalAlignment="Right">
-                <Button Content="Sync" Margin="0 2" Padding="15 5" Name="ButtonSync"/>
+                <Button Content="Sync" Margin="0 2" Padding="15 5" Name="ButtonSync"
+                        Style="{StaticResource AccentedSquareButtonStyle}"/>
             </StackPanel>
 
             <Border BorderBrush="Black" BorderThickness="1"
@@ -77,6 +76,8 @@
                 <Controls:MetroProgressBar Name="ProgressBarSync" 
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
+                                           Height="10"
+                                           Width="200"
                                            Maximum="{Binding Maximum}"
                                            Value="{Binding Progress}"
                                            Minimum="{Binding Minimum}"/>
