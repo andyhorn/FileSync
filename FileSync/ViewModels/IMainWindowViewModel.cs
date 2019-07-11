@@ -13,7 +13,8 @@ namespace FileSync.ViewModels
     public interface IMainWindowViewModel
     {
         bool SyncAll { get; set; }
-        ObservableCollection<FileInfo> Files { get; set; }
+        //ObservableCollection<FileInfo> Files { get; set; }
+        FileCollection<FileInfo> Files { get; set; }
         string StatusMessage { get; set; }
         int Progress { get; set; }
         int Maximum { get; set; }

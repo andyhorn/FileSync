@@ -1,6 +1,7 @@
 ﻿using FileSync.Helpers;
 using FileSync.Models;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 
@@ -8,13 +9,15 @@ namespace FileSync.ViewModels
 {
     public class MainWindowViewModel : IMainWindowViewModel, INotifyPropertyChanged
     {
-        private ObservableCollection<FileInfo> _files;
+        //private ObservableCollection<FileInfo> _files;
+        private FileCollection<FileInfo> _files;
         private string _status;
         private ISyncEngine _engine;
         private int _maximum, _minimum, _progress;
         private System.Windows.Controls.ProgressBar _progressBar;
         public bool SyncAll { get; set; }
-        public ObservableCollection<FileInfo> Files { get => _files; set => _files = value; }
+        //public ObservableCollection<FileInfo> Files { get => _files; set => _files = value; }
+        public FileCollection<FileInfo> Files { get => _files; set => _files = value; }
         public string StatusMessage
         {
             get => _status;
@@ -61,7 +64,8 @@ namespace FileSync.ViewModels
             _progressBar.Maximum = 100;
             _progressBar.Value = 0;
 
-            Files = new ObservableCollection<FileInfo>();
+            //Files = new ObservableCollection<FileInfo>();
+            _files = new FileCollection<FileInfo>();
             _engine = new SyncEngine();
 
             StatusMessage = "Ready";

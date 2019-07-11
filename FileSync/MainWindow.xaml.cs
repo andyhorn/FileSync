@@ -37,11 +37,13 @@ namespace FileSync
             SelectFilesButton.Click += new RoutedEventHandler((sender, target) =>
             {
                 model.SelectFiles();
+                SetSyncButton();
             });
 
             SelectFoldersButton.Click += new RoutedEventHandler((sender, target) =>
             {
                 model.SelectFolders();
+                SetSyncButton();
             });
 
             SyncButton.Click += new RoutedEventHandler((sender, target) =>
@@ -63,10 +65,10 @@ namespace FileSync
                 model.SyncAll = (bool)(sender as ToggleSwitch).IsChecked;
             });
 
-            model.Files.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler((sender, target) =>
-            {
-                SetSyncButton();
-            });
+            //model.Files.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler((sender, target) =>
+            //{
+            //    SetSyncButton();
+            //});
         }
 
         private void SetSyncButton()

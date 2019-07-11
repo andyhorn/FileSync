@@ -101,6 +101,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\FileHelper.cs" />
+    <Compile Include="Models\FileCollection.cs" />
     <Compile Include="Models\ISyncEngine.cs" />
     <Compile Include="Models\SyncEngine.cs" />
     <Compile Include="ViewModels\IMainWindowViewModel.cs" />

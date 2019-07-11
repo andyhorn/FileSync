@@ -14,7 +14,7 @@ namespace FileSync.Helpers
     public static class FileHelper
     {
         private static readonly string[] _filter = { ".ini" };
-        public static void SelectFiles(ref ObservableCollection<FileInfo> list)
+        public static void SelectFiles(ref FileCollection<FileInfo> list)
         {
             var dialog = new OpenFileDialog
             {
@@ -27,7 +27,7 @@ namespace FileSync.Helpers
             }
         }
 
-        public static void SelectFolders(ref ObservableCollection<FileInfo> list)
+        public static void SelectFolders(ref FileCollection<FileInfo> list)
         {
             var dialog = new CommonOpenFileDialog
             {
@@ -69,7 +69,7 @@ namespace FileSync.Helpers
             file.CopyTo(path, true);
         }
 
-        private static void LoadFiles(ref ObservableCollection<FileInfo> list, IEnumerable<string> fileNames)
+        private static void LoadFiles(ref FileCollection<FileInfo> list, IEnumerable<string> fileNames)
         {
             list.Clear();
 
@@ -80,10 +80,10 @@ namespace FileSync.Helpers
                 list.Add(info);
             }
 
-            list = FilterFiles(list);
+            FilterFiles(ref list);
         }
 
-        private static void LoadFiles(ref ObservableCollection<FileInfo> list, IEnumerable<FileInfo> files)
+        private static void LoadFiles(ref FileCollection<FileInfo> list, IEnumerable<FileInfo> files)
         {
             list.Clear();
 
@@ -92,7 +92,7 @@ namespace FileSync.Helpers
                 list.Add(file);
             }
 
-            list = FilterFiles(list);
+            FilterFiles(ref list);
         }
 
         private static IEnumerable<FileInfo> LoadSubdirectories(DirectoryInfo directory, bool first = false)
@@ -112,19 +112,30 @@ namespace FileSync.Helpers
             return files;
         }
 
-        private static ObservableCollection<FileInfo> FilterFiles(ObservableCollection<FileInfo> files)
+        private static void FilterFiles(ref FileCollection<FileInfo> files)
         {
-            var newList = new ObservableCollection<FileInfo>();
+            //var newList = new FileCollection<FileInfo>();
 
-            foreach(var file in files)
+            //foreach(var file in files)
+            //{
+            //    if(!_filter.Contains(file.Extension))
+            //    {
+            //        newList.Add(file);
+            //    }
+            //}
+
+            //return newList;
+
+            var removable = files.Where(x => _filter.Contains(x.Extension)).ToList();
+
+            if(removable?.Any() == true)
             {
-                if(!_filter.Contains(file.Extension))
-                {
-                    newList.Add(file);
-                }
+                files.RemoveRange(removable);
+                //foreach(var file in removable)
+                //{
+                //    files.Remove(file);
+                //}
             }
-
-            return newList;
         }
     }
 }
