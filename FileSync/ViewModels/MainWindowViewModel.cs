@@ -1,14 +1,8 @@
 ﻿using FileSync.Helpers;
 using FileSync.Models;
-using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileSync.ViewModels
 {
@@ -82,19 +76,42 @@ namespace FileSync.ViewModels
             OnPropertyChanged("Files");
         }
 
+        public void SelectFolders()
+        {
+            FileHelper.SelectFolders(ref _files);
+
+            StatusMessage = $"{_files.Count} files selected.";
+
+            OnPropertyChanged("Files");
+        }
+
         public void Sync()
         {
             var directory = FileHelper.SelectDirectory();
 
+            if (directory == null)
+            {
+                return;
+            }
+
             StatusMessage = $"Syncing...";
 
             _progressBar.IsIndeterminate = true;
-            
+
             _engine.Sync(_files, directory, SyncAll);
 
             _progressBar.IsIndeterminate = false;
 
             StatusMessage = "Done!";
+        }
+
+        public void Clear()
+        {
+            _files.Clear();
+
+            OnPropertyChanged("Files");
+
+            StatusMessage = "Ready";
         }
 
         private void OnPropertyChanged(string propertyName)

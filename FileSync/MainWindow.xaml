@@ -39,6 +39,8 @@
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
                 <Button Content="Select Files" Margin="0 2" Padding="5" Name="ButtonSelectFiles"
                         Style="{StaticResource AccentedSquareButtonStyle}"/>
+                <Button Content="Select Folder(s)" Margin="2 2" Padding="5" Name="ButtonSelectFolders"
+                        Style="{StaticResource AccentedSquareButtonStyle}"/>
             </StackPanel>
 
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -49,7 +51,9 @@
 
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal"
                         HorizontalAlignment="Right">
-                <Button Content="Sync" Margin="0 2" Padding="15 5" Name="ButtonSync"
+                <Button Content="Clear" Margin="2 2" Padding="15 5" Name="ButtonClear"
+                        Style="{StaticResource AccentedSquareButtonStyle}"/>
+                <Button Content="Sync" Margin="0 2" Padding="15 5" Name="ButtonSync" IsEnabled="False"
                         Style="{StaticResource AccentedSquareButtonStyle}"/>
             </StackPanel>
 

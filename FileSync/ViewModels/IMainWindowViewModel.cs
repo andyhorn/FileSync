@@ -21,6 +21,10 @@ namespace FileSync.ViewModels
 
         void SelectFiles();
 
+        void SelectFolders();
+
         void Sync();
+
+        void Clear();
     }
 }

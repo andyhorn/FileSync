@@ -1,21 +1,8 @@
-﻿using FileSync.Models;
-using FileSync.ViewModels;
+﻿using FileSync.ViewModels;
 using MahApps.Metro.Controls;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FileSync
 {
@@ -25,7 +12,7 @@ namespace FileSync
     public partial class MainWindow
     {
         private IMainWindowViewModel model;
-        private Button SelectFilesButton, SyncButton;
+        private Button SelectFilesButton, SelectFoldersButton, SyncButton, ClearButton;
         private ListView FileListView;
         private ToggleSwitch SyncAllToggle;
         private ProgressBar ProgressBar;
@@ -34,7 +21,9 @@ namespace FileSync
             InitializeComponent();
 
             SelectFilesButton = ButtonSelectFiles;
+            SelectFoldersButton = ButtonSelectFolders;
             SyncButton = ButtonSync;
+            ClearButton = ButtonClear;
             FileListView = ListViewFileList;
             SyncAllToggle = ToggleSwitchSyncAll;
             ProgressBar = ProgressBarSync;
@@ -50,16 +39,39 @@ namespace FileSync
                 model.SelectFiles();
             });
 
+            SelectFoldersButton.Click += new RoutedEventHandler((sender, target) =>
+            {
+                model.SelectFolders();
+            });
+
             SyncButton.Click += new RoutedEventHandler((sender, target) =>
-            {                
+            {
                 model.Sync();
+            });
+
+            ClearButton.Click += new RoutedEventHandler((sender, target) =>
+            {
+                model.Clear();
+                FileListView.ItemsSource = null;
+                FileListView.Items.Clear();
+                FileListView.ItemsSource = model.Files;
+                SetSyncButton();
             });
 
             SyncAllToggle.IsCheckedChanged += new EventHandler((sender, target) =>
             {
                 model.SyncAll = (bool)(sender as ToggleSwitch).IsChecked;
             });
+
+            model.Files.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler((sender, target) =>
+            {
+                SetSyncButton();
+            });
         }
-        
+
+        private void SetSyncButton()
+        {
+            SyncButton.IsEnabled = model.Files.Count > 0;
+        }
     }
 }
