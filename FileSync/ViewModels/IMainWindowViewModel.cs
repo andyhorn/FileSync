@@ -18,7 +18,6 @@ namespace FileSync.ViewModels
         int Progress { get; set; }
         int Maximum { get; set; }
         int Minimum { get; set; }
-        //DirectoryInfo Directory { get; set; }
 
         void SelectFiles();
 

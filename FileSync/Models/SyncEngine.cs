@@ -13,9 +13,6 @@ namespace FileSync.Models
     {
         private ICollection<FileInfo> _files;
         private DirectoryInfo _directory;
-        //private SyncOption _sync;
-        //private ProgressBar _progressBar;
-        //public void Sync(ICollection<FileInfo> files, DirectoryInfo destination, SyncOption option, ProgressBar progressBar)
         public void Sync(ICollection<FileInfo> files, DirectoryInfo destination, bool syncAll)
         {
             _files = files;
@@ -29,57 +26,19 @@ namespace FileSync.Models
             {
                 SyncNew();
             }
-            //_sync = option;
-            //_progressBar = progressBar;
-
-            //_progressBar.IsIndeterminate = true;
-
-            //switch(option.Type)
-            //{
-            //    case SyncType.CopyAll:
-            //        //await Task.Run(new Action(SyncAll));
-            //        //SyncAll(files, destination, option);
-            //        SyncAll();
-            //        break;
-            //    case SyncType.CopyNew:
-            //        //SyncNew(files, destination, progressBar);
-            //        SyncNew();
-            //        //await Task.Run(new Action(SyncNew));
-            //        break;
-            //    default:
-            //        break;
-            //}
-
-            //_progressBar.IsIndeterminate = false;
         }
 
-        //private async void SyncAll(ICollection<FileInfo> files, DirectoryInfo destination, ProgressBar progressBar)
         private void SyncAll()
         {
-            //_progressBar.Maximum = _files.Count;
-            //_progressBar.Value = 0;
-
-            //_progressBar.IsIndeterminate = true;
-
             foreach(var f in _files)
             {
                 FileHelper.CopyFile(f, _directory);
-                //_progressBar.Value += 1;
             }
-
-            //_progressBar.IsIndeterminate = false;
         }
 
-        //private async void SyncNew(ICollection<FileInfo> files, DirectoryInfo destination, ProgressBar progressBar)
         private void SyncNew()
         {
-            //var destinationFiles = destination.EnumerateFiles();
-            //var currentFiles = destination.GetFiles();
             var currentFiles = _directory.GetFiles();
-            //var subdirs = destination.EnumerateDirectories();
-
-            //_progressBar.Maximum = _files.Count;
-            //_progressBar.Value = 0;
 
             foreach(var f in _files)
             {
@@ -98,8 +57,6 @@ namespace FileSync.Models
                 {
                     FileHelper.CopyFile(f, _directory);
                 }
-
-                //_progressBar.Value += 1;
             }
         }
     }

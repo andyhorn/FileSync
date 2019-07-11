@@ -57,7 +57,6 @@ namespace FileSync.ViewModels
                 OnPropertyChanged("Progress");
             }
         }
-        //public DirectoryInfo Directory { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -67,17 +66,6 @@ namespace FileSync.ViewModels
             _progressBar.Minimum = 0;
             _progressBar.Maximum = 100;
             _progressBar.Value = 0;
-            //_progressBar.IsIndeterminate = true;
-
-            //Options = new List<SyncOption>();
-
-            //foreach(SyncType type in Enum.GetValues(typeof(SyncType)))
-            //{
-            //    var option = new SyncOption(type);
-            //    Options.Add(option);
-            //}
-
-            //SelectedOption = Options[0];
 
             Files = new ObservableCollection<FileInfo>();
             _engine = new SyncEngine();
@@ -101,8 +89,7 @@ namespace FileSync.ViewModels
             StatusMessage = $"Syncing...";
 
             _progressBar.IsIndeterminate = true;
-
-            //_engine.Sync(_files, directory, SelectedOption, _progressBar);
+            
             _engine.Sync(_files, directory, SyncAll);
 
             _progressBar.IsIndeterminate = false;

@@ -27,7 +27,6 @@ namespace FileSync
         private IMainWindowViewModel model;
         private Button SelectFilesButton, SyncButton;
         private ListView FileListView;
-        //private ComboBox SyncOptionsComboBox;
         private ToggleSwitch SyncAllToggle;
         private ProgressBar ProgressBar;
         public MainWindow()
@@ -38,12 +37,9 @@ namespace FileSync
             SyncButton = ButtonSync;
             FileListView = ListViewFileList;
             SyncAllToggle = ToggleSwitchSyncAll;
-            //SyncOptionsComboBox = ComboBoxSyncOptions;
             ProgressBar = ProgressBarSync;
 
             model = new MainWindowViewModel(ProgressBar);
-
-            //SyncOptionsComboBox.SelectedItem = model.SelectedOption;
 
             FileListView.ItemsSource = model.Files;
 
@@ -63,11 +59,6 @@ namespace FileSync
             {
                 model.SyncAll = (bool)(sender as ToggleSwitch).IsChecked;
             });
-
-            //SyncOptionsComboBox.SelectionChanged += new SelectionChangedEventHandler((sender, target) =>
-            //{
-            //    model.SelectedOption = SyncOptionsComboBox.SelectedItem as SyncOption;
-            //});
         }
         
     }
