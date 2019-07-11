@@ -13,34 +13,44 @@ namespace FileSync.Models
     {
         private ICollection<FileInfo> _files;
         private DirectoryInfo _directory;
-        private SyncOption _sync;
-        private ProgressBar _progressBar;
-        public void Sync(ICollection<FileInfo> files, DirectoryInfo destination, SyncOption option, ProgressBar progressBar)
+        //private SyncOption _sync;
+        //private ProgressBar _progressBar;
+        //public void Sync(ICollection<FileInfo> files, DirectoryInfo destination, SyncOption option, ProgressBar progressBar)
+        public void Sync(ICollection<FileInfo> files, DirectoryInfo destination, bool syncAll)
         {
             _files = files;
             _directory = destination;
-            _sync = option;
-            _progressBar = progressBar;
 
-            _progressBar.IsIndeterminate = true;
-
-            switch(option.Type)
+            if(syncAll)
             {
-                case SyncType.CopyAll:
-                    //await Task.Run(new Action(SyncAll));
-                    //SyncAll(files, destination, option);
-                    SyncAll();
-                    break;
-                case SyncType.CopyNew:
-                    //SyncNew(files, destination, progressBar);
-                    SyncNew();
-                    //await Task.Run(new Action(SyncNew));
-                    break;
-                default:
-                    break;
+                SyncAll();
             }
+            else
+            {
+                SyncNew();
+            }
+            //_sync = option;
+            //_progressBar = progressBar;
 
-            _progressBar.IsIndeterminate = false;
+            //_progressBar.IsIndeterminate = true;
+
+            //switch(option.Type)
+            //{
+            //    case SyncType.CopyAll:
+            //        //await Task.Run(new Action(SyncAll));
+            //        //SyncAll(files, destination, option);
+            //        SyncAll();
+            //        break;
+            //    case SyncType.CopyNew:
+            //        //SyncNew(files, destination, progressBar);
+            //        SyncNew();
+            //        //await Task.Run(new Action(SyncNew));
+            //        break;
+            //    default:
+            //        break;
+            //}
+
+            //_progressBar.IsIndeterminate = false;
         }
 
         //private async void SyncAll(ICollection<FileInfo> files, DirectoryInfo destination, ProgressBar progressBar)

@@ -1,5 +1,6 @@
 ﻿using FileSync.Models;
 using FileSync.ViewModels;
+using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +22,13 @@ namespace FileSync
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private IMainWindowViewModel model;
         private Button SelectFilesButton, SyncButton;
         private ListView FileListView;
-        private ComboBox SyncOptionsComboBox;
+        //private ComboBox SyncOptionsComboBox;
+        private ToggleSwitch SyncAllToggle;
         private ProgressBar ProgressBar;
         public MainWindow()
         {
@@ -35,12 +37,13 @@ namespace FileSync
             SelectFilesButton = ButtonSelectFiles;
             SyncButton = ButtonSync;
             FileListView = ListViewFileList;
-            SyncOptionsComboBox = ComboBoxSyncOptions;
+            SyncAllToggle = ToggleSwitchSyncAll;
+            //SyncOptionsComboBox = ComboBoxSyncOptions;
             ProgressBar = ProgressBarSync;
 
             model = new MainWindowViewModel(ProgressBar);
 
-            SyncOptionsComboBox.SelectedItem = model.SelectedOption;
+            //SyncOptionsComboBox.SelectedItem = model.SelectedOption;
 
             FileListView.ItemsSource = model.Files;
 
@@ -56,10 +59,15 @@ namespace FileSync
                 model.Sync();
             });
 
-            SyncOptionsComboBox.SelectionChanged += new SelectionChangedEventHandler((sender, target) =>
+            SyncAllToggle.IsCheckedChanged += new EventHandler((sender, target) =>
             {
-                model.SelectedOption = SyncOptionsComboBox.SelectedItem as SyncOption;
+                model.SyncAll = (bool)(sender as ToggleSwitch).IsChecked;
             });
+
+            //SyncOptionsComboBox.SelectionChanged += new SelectionChangedEventHandler((sender, target) =>
+            //{
+            //    model.SelectedOption = SyncOptionsComboBox.SelectedItem as SyncOption;
+            //});
         }
         
     }
