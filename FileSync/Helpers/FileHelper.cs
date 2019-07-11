@@ -12,19 +12,31 @@ namespace FileSync.Helpers
         private static readonly string[] _filter = { ".ini" };
         public static void SelectFiles(ref FileCollection<FileInfo> list)
         {
+            // Create a file selection dialog that can select multiple files
             var dialog = new OpenFileDialog
             {
                 Multiselect = true
             };
 
+            // Show the dialog
             if(dialog.ShowDialog() == true)
             {
+                // If the user selected files
+
+                // Clear the master file list
+                list.Clear();
+
+                // Load the new files into the master list
                 LoadFiles(ref list, dialog.FileNames);
+
+                // Filter ignorable files from the master list
+                FilterFiles(ref list);
             }
         }
 
-        public static void SelectFolders(ref FileCollection<FileInfo> list, ref DirectoryInfo directory)
+        public static void SelectFolders(ref FileCollection<FileInfo> list, ref List<DirectoryInfo> directories)
         {
+            // Create a dialog that allows users to select one or multiple folders
             var dialog = new CommonOpenFileDialog
             {
                 IsFolderPicker = true,
@@ -32,115 +44,136 @@ namespace FileSync.Helpers
                 ShowHiddenItems = false
             };
 
+            // Show the dialog
             if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                directory = new DirectoryInfo(dialog.FileName);
+                // If the user made a selection
 
-                var files = LoadSubdirectories(directory).ToList();
+                // Clear the master file list
+                list.Clear();
 
-                LoadFiles(ref list, files);
+                // Clear the master directory list
+                directories.Clear();
+
+                // Get the list of directories they selected
+                var directoryList = dialog.FileNames;
+
+                // For each directory they selected
+                foreach(var directory in directoryList)
+                {
+                    // Get a directory object
+                    var newDirectory = new DirectoryInfo(directory);
+
+                    // Add it to the directories list
+                    directories.Add(newDirectory);
+
+                    // Recursively load the files from all subdirectories
+                    var files = LoadSubdirectories(newDirectory).ToList();
+
+                    // Load the files into the master file collection
+                    LoadFiles(ref list, files);
+                }
+
+                // Filter ignorable files from the master list
+                FilterFiles(ref list);
             }
         }
 
         public static DirectoryInfo SelectDirectory()
         {
+            // Create a new folder opener dialog object
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
 
+            // Show the dialog to the user
             if(dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
+                // If the user made a selection
+
+                // Get the pathname for the selected folder
                 var dirName = dialog.SelectedPath;
 
+                // Create a directory object
                 var directory = new DirectoryInfo(dirName);
 
+                // Return the object
                 return directory;
             }
 
+            // If the user did not make a selection, return null
             return null;
         }
 
         public static void CopyFile(FileInfo file, DirectoryInfo destination)
         {
+            // Create the new full path for the file
             var path = $"{destination.FullName}\\{file.Name}";
 
+            // Copy the file object to the new path
             file.CopyTo(path, true);
-        }
-
-        public static void CreatePath(string pathname)
-        {
-            var dirs = pathname.Split('\\');
-
-            foreach(var dir in dirs)
-            {
-                var dirInfo = new DirectoryInfo(dir);
-
-                if(!dirInfo.Exists)
-                {
-                    dirInfo.Create();
-                }
-            }
         }
 
         private static void LoadFiles(ref FileCollection<FileInfo> list, IEnumerable<string> fileNames)
         {
-            list.Clear();
+            // Create a temporary list of file objects
+            var fileList = new List<FileInfo>();
 
-            foreach(var file in fileNames)
+            // Convert each file name into a file object
+            // and add it to the file list
+            foreach(var fileName in fileNames)
             {
-                var info = new FileInfo(file);
-
-                list.Add(info);
+                var info = new FileInfo(fileName);
+                fileList.Add(info);
             }
 
-            FilterFiles(ref list);
+            // Send this file list to the main LoadFiles method
+            LoadFiles(ref list, fileList);
         }
 
         private static void LoadFiles(ref FileCollection<FileInfo> list, IEnumerable<FileInfo> files)
         {
-            list.Clear();
-
+            // For each file object in the enumerable
             foreach(var file in files)
             {
+                // Add the file to the master list
                 list.Add(file);
             }
-
-            FilterFiles(ref list);
         }
 
         private static IEnumerable<FileInfo> LoadSubdirectories(DirectoryInfo directory, bool first = false)
         {
+            // Get the list of files in the current directory
             var files = directory.EnumerateFiles().ToList();
 
+            // For each subdirectory within the current directory
             foreach(var subdir in directory.EnumerateDirectories())
             {
+                // Recurse through this algorithm to gather a list of nested files
                 var list = LoadSubdirectories(subdir);
 
+                // For each file in the file list retrieved through recursion
                 foreach(var item in list)
                 {
+                    // Add the file to this file list
                     files.Add(item);
                 }
             }
 
+            // Return this file list
             return files;
         }
 
         private static void FilterFiles(ref FileCollection<FileInfo> files)
         {
+            // Create a list of objects to be removed from the primary list, based on a collection of
+            // file extensions to be ignored
             var removable = files.Where(x => _filter.Contains(x.Extension)).ToList();
 
+            // If there are any files matching the filter
             if(removable?.Any() == true)
             {
+                // Remove all the 'removable' files from the list
                 files.RemoveRange(removable);
             }
-        }
-
-        public static bool PathExists(string path)
-        {
-            return PathExists(new DirectoryInfo(path));
-        }
-
-        public static bool PathExists(DirectoryInfo path)
-        {
-            return path.Exists;
         }
     }
 }

@@ -54,9 +54,6 @@ namespace FileSync
             ClearButton.Click += new RoutedEventHandler((sender, target) =>
             {
                 model.Clear();
-                //FileListView.ItemsSource = null;
-                //FileListView.Items.Clear();
-                //FileListView.ItemsSource = model.Files;
                 SetSyncButton();
             });
 

@@ -1,5 +1,6 @@
 ﻿using FileSync.Helpers;
 using FileSync.Models;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 
@@ -8,7 +9,7 @@ namespace FileSync.ViewModels
     public class MainWindowViewModel : IMainWindowViewModel, INotifyPropertyChanged
     {
         private FileCollection<FileInfo> _files;
-        private DirectoryInfo _selectedDirectory;
+        private List<DirectoryInfo> _selectedDirectories;
         private string _status;
         private int _maximum, _minimum, _progress;
         private System.Windows.Controls.ProgressBar _progressBar;
@@ -61,6 +62,8 @@ namespace FileSync.ViewModels
             _progressBar.Maximum = 100;
             _progressBar.Value = 0;
 
+            _selectedDirectories = new List<DirectoryInfo>();
+
             _files = new FileCollection<FileInfo>();
 
             StatusMessage = "Ready";
@@ -79,7 +82,7 @@ namespace FileSync.ViewModels
 
         public void SelectFolders()
         {
-            FileHelper.SelectFolders(ref _files, ref _selectedDirectory);
+            FileHelper.SelectFolders(ref _files, ref _selectedDirectories);
 
             _syncDirectories = true;
 
@@ -103,7 +106,10 @@ namespace FileSync.ViewModels
 
             if(_syncDirectories)
             {
-                SyncEngine.RecursivelySyncDirectory(_selectedDirectory, saveDirectory, SyncAll);
+                foreach(var directory in _selectedDirectories)
+                {
+                    SyncEngine.RecursivelySyncDirectory(directory, saveDirectory, SyncAll);
+                }
             }
             else
             {
