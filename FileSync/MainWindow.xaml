@@ -59,9 +59,9 @@
                           ItemsSource="{Binding Files}">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
-                            <GridViewColumn Header="Folder" DisplayMemberBinding="{Binding Directory}"/>
-                            <GridViewColumn Header="Modified Date" DisplayMemberBinding="{Binding LastWriteTime}"/>
+                            <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding Name}"/>
+                            <GridViewColumn Header="Source Directory" DisplayMemberBinding="{Binding Directory}"/>
+                            <GridViewColumn Header="Last Modified" DisplayMemberBinding="{Binding LastWriteTime}"/>
                             <GridViewColumn Header="Size (Bytes)" DisplayMemberBinding="{Binding Length}"/>
                         </GridView>
                     </ListView.View>
