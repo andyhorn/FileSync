@@ -10,7 +10,6 @@ namespace FileSync.ViewModels
         private FileCollection<FileInfo> _files;
         private DirectoryInfo _selectedDirectory;
         private string _status;
-        private ISyncEngine _engine;
         private int _maximum, _minimum, _progress;
         private System.Windows.Controls.ProgressBar _progressBar;
         private bool _syncDirectories;
@@ -63,7 +62,6 @@ namespace FileSync.ViewModels
             _progressBar.Value = 0;
 
             _files = new FileCollection<FileInfo>();
-            _engine = new SyncEngine();
 
             StatusMessage = "Ready";
         }
@@ -105,11 +103,11 @@ namespace FileSync.ViewModels
 
             if(_syncDirectories)
             {
-                _engine.SyncDirectory(_selectedDirectory, saveDirectory, SyncAll);
+                SyncEngine.RecursivelySyncDirectory(_selectedDirectory, saveDirectory, SyncAll);
             }
             else
             {
-                _engine.SyncFiles(_files, saveDirectory, SyncAll);
+                SyncEngine.SyncFiles(_files, saveDirectory, SyncAll);
             }
 
             _progressBar.IsIndeterminate = false;

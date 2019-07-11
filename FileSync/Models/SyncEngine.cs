@@ -5,63 +5,42 @@ using System.Linq;
 
 namespace FileSync.Models
 {
-    public class SyncEngine : ISyncEngine
+    public static class SyncEngine
     {
-        private ICollection<FileInfo> _files;
-        private DirectoryInfo _directory;
-        private DirectoryInfo _destination;
-        public void SyncFiles(ICollection<FileInfo> files, DirectoryInfo destination, bool syncAll)
+        public static void SyncFiles(ICollection<FileInfo> files, DirectoryInfo destination, bool syncAll)
         {
-            // Save the file collection to be used
-            _files = files;
-
-            // Save the destination information
-            _destination = destination;
-
             // Choose the correct mode of synchronization
             if(syncAll)
             {
                 // Forcibly overwrite all existing files in destination
-                SyncAllFiles();
+                SyncAllFiles(files, destination);
             }
             else
             {
                 // Only copy files that are newer than their counterparts in the destination
-                SyncNewFiles();
+                SyncNewFiles(files, destination);
             }
         }
 
-        public void SyncDirectory(DirectoryInfo directory, DirectoryInfo destination, bool syncAll)
-        {
-            // Save the directory to be copied
-            _directory = directory;
-
-            // Save the destination directory
-            _destination = destination;
-
-            // Begin the recursive directory copying algorithm
-            RecursivelySyncDirectory(directory, destination, syncAll);
-        }
-
-        private void SyncAllFiles()
+        private static void SyncAllFiles(ICollection<FileInfo> files, DirectoryInfo destination)
         {
             // Copy each file in the file list to the destination
-            foreach(var f in _files)
+            foreach(var f in files)
             {
-                FileHelper.CopyFile(f, _destination);
+                FileHelper.CopyFile(f, destination);
             }
         }
 
-        private void SyncNewFiles()
+        private static void SyncNewFiles(ICollection<FileInfo> files, DirectoryInfo destination)
         {
             // Get the list of files in the base directory
-            var currentFiles = _destination.GetFiles();
+            var currentFiles = destination.GetFiles();
 
             // FileInfo object for use during the loop
             FileInfo existingFile = null;
 
             // For each file
-            foreach(var f in _files)
+            foreach(var f in files)
             {
                 // Check for an existing file
                 existingFile = currentFiles.FirstOrDefault(x => x.Name == f.Name);
@@ -69,12 +48,12 @@ namespace FileSync.Models
                 // If no duplicate file exists OR the current file is newer than the existing file, copy
                 if(existingFile == null || f.LastWriteTime > existingFile.LastWriteTime)
                 {
-                    FileHelper.CopyFile(f, _destination);
+                    FileHelper.CopyFile(f, destination);
                 }
             }
         }
 
-        private void RecursivelySyncDirectory(DirectoryInfo directory, DirectoryInfo destination, bool forceOverwrite)
+        public static void RecursivelySyncDirectory(DirectoryInfo directory, DirectoryInfo destination, bool forceOverwrite)
         {
             // Get the current directory's name
             var directoryName = directory.Name;
