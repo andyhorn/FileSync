@@ -18,7 +18,6 @@ namespace FileSync
         private Button SelectFilesButton, SelectFoldersButton, SyncButton, ClearButton;
         private ListView FileListView;
         private ToggleSwitch SyncAllToggle;
-        private Collection<TextBox> RemoveLinks;
 
         private void TextBlock_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {

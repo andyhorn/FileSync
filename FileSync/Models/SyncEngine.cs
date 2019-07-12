@@ -53,7 +53,7 @@ namespace FileSync.Models
             }
         }
 
-        public static void RecursivelySyncDirectory(DirectoryInfo directory, DirectoryInfo destination, bool forceOverwrite)
+        public static void RecursivelySyncDirectory(FileCollection<FileInfo> files, DirectoryInfo directory, DirectoryInfo destination, bool forceOverwrite)
         {
             // Get the current directory's name
             var directoryName = directory.Name;
@@ -73,9 +73,17 @@ namespace FileSync.Models
                 newDirectory.Create();
             }
 
+            var dirFiles = directory.GetFiles();
+
             // For each file in this current directory
-            foreach(var file in directory.GetFiles())
+            foreach(var file in dirFiles)
             {
+                // If the file was removed from the master file list, do not copy it
+                if(files.FirstOrDefault(x => x.FullName == file.FullName) == null)
+                {
+                    continue;
+                }
+
                 // Search for an existing file in the destination
                 var existingFile = newDirectory.GetFiles().FirstOrDefault(x => x.Name == file.Name);
 
@@ -94,8 +102,53 @@ namespace FileSync.Models
             // using this directory as the new 'destination' directory
             foreach(var subDirectory in directory.GetDirectories())
             {
-                RecursivelySyncDirectory(subDirectory, newDestination, forceOverwrite);
+                RecursivelySyncDirectory(files, subDirectory, newDestination, forceOverwrite);
             }
+        }
+
+        public static void RecursivelyRemoveIfEmpty(DirectoryInfo directory)
+        {
+            if(RecursiveIsEmpty(directory))
+            {
+                directory.Delete();
+            }
+            //var subdirs = directory.GetDirectories();
+            //var files = directory.GetFiles().Where(x => x.Extension != ".ini").ToList();
+
+            //foreach(var subdir in subdirs)
+            //{
+            //    RecursivelyRemoveIfEmpty(subdir);
+            //}
+
+            //subdirs = directory.GetDirectories();
+
+            //if (!subdirs.Any() && !files.Any())
+            //{
+            //    directory.Delete();
+            //}
+        }
+
+        public static bool RecursiveIsEmpty(DirectoryInfo directory)
+        {
+            var subdirs = directory.GetDirectories().ToList();
+            var files = directory.GetFiles().Where(x => x.Extension != ".ini").ToList();
+
+            var toDelete = new List<DirectoryInfo>();
+
+            foreach(var subdir in subdirs)
+            {
+                if(RecursiveIsEmpty(subdir))
+                {
+                    toDelete.Add(subdir);
+                }
+            }
+
+            foreach(var dir in toDelete)
+            {
+                dir.Delete();
+            }
+
+            return !directory.GetDirectories().ToList().Any() && !files.Any();
         }
     }
 }

@@ -117,12 +117,17 @@ namespace FileSync.ViewModels
             // If we are syncing directories
             if(_syncDirectories)
             {
+                // Verify the files and folders to be copied
+                Verify();
+
                 // Loop through each chosen directory
                 foreach(var directory in _selectedDirectories)
                 {
                     // Recursively synchronize it and its subdirectories with the destination
-                    SyncEngine.RecursivelySyncDirectory(directory, saveDirectory, SyncAll);
+                    SyncEngine.RecursivelySyncDirectory(_files, directory, saveDirectory, SyncAll);
                 }
+
+                SyncEngine.RecursivelyRemoveIfEmpty(saveDirectory);
             }
             else
             {
@@ -156,6 +161,13 @@ namespace FileSync.ViewModels
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void Verify()
+        {
+            // Recurse through all directories
+
+            // Remove any directories that 
         }
     }
 }
