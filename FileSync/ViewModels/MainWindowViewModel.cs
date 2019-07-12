@@ -117,9 +117,6 @@ namespace FileSync.ViewModels
             // If we are syncing directories
             if(_syncDirectories)
             {
-                // Verify the files and folders to be copied
-                Verify();
-
                 // Loop through each chosen directory
                 foreach(var directory in _selectedDirectories)
                 {
@@ -161,13 +158,6 @@ namespace FileSync.ViewModels
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private void Verify()
-        {
-            // Recurse through all directories
-
-            // Remove any directories that 
         }
     }
 }

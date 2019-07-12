@@ -112,42 +112,40 @@ namespace FileSync.Models
             {
                 directory.Delete();
             }
-            //var subdirs = directory.GetDirectories();
-            //var files = directory.GetFiles().Where(x => x.Extension != ".ini").ToList();
-
-            //foreach(var subdir in subdirs)
-            //{
-            //    RecursivelyRemoveIfEmpty(subdir);
-            //}
-
-            //subdirs = directory.GetDirectories();
-
-            //if (!subdirs.Any() && !files.Any())
-            //{
-            //    directory.Delete();
-            //}
         }
 
         public static bool RecursiveIsEmpty(DirectoryInfo directory)
         {
+            // Get a list of the subdirectories
             var subdirs = directory.GetDirectories().ToList();
+
+            // Get a list of files within this directory
             var files = directory.GetFiles().Where(x => x.Extension != ".ini").ToList();
 
+            // Create a list of directories to remove
             var toDelete = new List<DirectoryInfo>();
 
+            // For each subdirectory in this directory
             foreach(var subdir in subdirs)
             {
+                // Recurse through this algorithm
+                // If the subdirectory is empty
                 if(RecursiveIsEmpty(subdir))
                 {
+                    // Add it to the list of directories to remove
                     toDelete.Add(subdir);
                 }
             }
 
+            // Once all subdirectories have been scanned,
+            // loop through the tracking list
             foreach(var dir in toDelete)
             {
+                // Delete all empty subdirectories
                 dir.Delete();
             }
 
+            // Return true if this directory is empty
             return !directory.GetDirectories().ToList().Any() && !files.Any();
         }
     }

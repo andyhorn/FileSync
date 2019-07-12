@@ -19,11 +19,6 @@ namespace FileSync
         private ListView FileListView;
         private ToggleSwitch SyncAllToggle;
 
-        private void TextBlock_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-
-        }
-
         private void TextBlock_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var link = sender as TextBlock;
