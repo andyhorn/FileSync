@@ -2,20 +2,21 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 
 namespace FileSync.Models
 {
-    public class FileCollection<T> : ObservableCollection<T>
+    public class FileCollection : ObservableCollection<FileInfo>
     {
         // Flag used during bulk adds or removals
         private bool _suppressNotification;
 
         public FileCollection() { }
 
-        public FileCollection(IEnumerable<T> items) : base(items) { }
+        public FileCollection(IEnumerable<FileInfo> items) : base(items) { }
 
-        public void AddRange(IEnumerable<T> items)
+        public void AddRange(IEnumerable<FileInfo> items)
         {
             // If nothing was passed, return early
             if(items == null)
@@ -47,13 +48,13 @@ namespace FileSync.Models
             }
         }
 
-        public void AddRange(params T[] items)
+        public void AddRange(params FileInfo[] items)
         {
             // Cast the array to an enumerable and pass it to the main AddRange method
-            AddRange((IEnumerable<T>)items);
+            AddRange((IEnumerable<FileInfo>)items);
         }
 
-        public void ReplaceWithRange(IEnumerable<T> items)
+        public void ReplaceWithRange(IEnumerable<FileInfo> items)
         {
             // Clear the underlying items collection
             Items.Clear();
@@ -65,7 +66,7 @@ namespace FileSync.Models
             AddRange(items);
         }
 
-        public void RemoveRange(IEnumerable<T> items)
+        public void RemoveRange(IEnumerable<FileInfo> items)
         {
             // Set the flag to prevent unnecessary notifications
             _suppressNotification = true;
@@ -91,7 +92,7 @@ namespace FileSync.Models
             }
         }
 
-        public new void Remove(T item)
+        public new void Remove(FileInfo item)
         {
             if(Items.Contains(item))
             {

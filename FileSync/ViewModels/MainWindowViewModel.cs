@@ -1,21 +1,23 @@
 ﻿using FileSync.Helpers;
 using FileSync.Models;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Windows.Threading;
 
 namespace FileSync.ViewModels
 {
     public class MainWindowViewModel : IMainWindowViewModel, INotifyPropertyChanged
     {
-        private FileCollection<FileInfo> _files;
-        private List<DirectoryInfo> _selectedDirectories;
+        private FileCollection _files;
         private string _status;
         private int _maximum, _minimum, _progress;
-        private System.Windows.Controls.ProgressBar _progressBar;
         private bool _syncDirectories;
+
         public bool SyncAll { get; set; }
-        public FileCollection<FileInfo> Files { get => _files; set => _files = value; }
+        public FileCollection Files { get => _files; set => _files = value; }
+        public ICollection<IDirectory> Directories { get; set; }
         public string StatusMessage
         {
             get => _status;
@@ -55,38 +57,44 @@ namespace FileSync.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public MainWindowViewModel(System.Windows.Controls.ProgressBar progress)
+        public MainWindowViewModel()
         {
-            _progressBar = progress;
-            _progressBar.Minimum = 0;
-            _progressBar.Maximum = 100;
-            _progressBar.Value = 0;
-
-            _selectedDirectories = new List<DirectoryInfo>();
-
-            _files = new FileCollection<FileInfo>();
+            Directories = new Collection<IDirectory>();
+            _files = new FileCollection();
 
             StatusMessage = "Ready";
         }
 
         public void SelectFiles()
         {
-            // Use the file helper to select one or more files
-            FileHelper.SelectFiles(ref _files);
+            // Select one or more files
+            var files = DialogFactory.New().PickFiles();
+
+            // If no files were selected (user clicked "Cancel"),
+            // do not update any model data
+            if(files == null)
+            {
+                return;
+            }
+
+            // Save the selected files to the Files property
+            Files = files;
 
             // Set the sync flag to signify we only have files to copy, not directories
             _syncDirectories = false;
-
-            // Set an appropriate status message
-            StatusMessage = $"{_files.Count} files selected.";
-
-            OnPropertyChanged("Files");
         }
 
-        public void SelectFolders()
+        public async void SelectFolders()
         {
             // Use the file helper to select one or more directories from which to copy files
-            FileHelper.SelectFolders(ref _files, ref _selectedDirectories);
+            //StaticFileHelper.SelectFolders(ref _files, ref _selectedDirectories);
+            //Directories = _dialog.PickFolders();
+            Directories = DialogFactory.New().PickFolders();
+
+            foreach(var directory in Directories)
+            {
+                await AsyncFileHelper.CopyFiles(directory.Files, _files);
+            }
 
             // Set the flag to signify we have directories to copy along with their files
             _syncDirectories = true;
@@ -100,7 +108,7 @@ namespace FileSync.ViewModels
         public void Sync()
         {
             // Use the file helper to locate a save directory
-            var saveDirectory = FileHelper.SelectDirectory();
+            var saveDirectory = StaticFileHelper.SelectDirectory();
 
             // If no directory was chosen, return early
             if(saveDirectory == null)
@@ -111,17 +119,14 @@ namespace FileSync.ViewModels
             // Set an appropriate status message
             StatusMessage = $"Syncing...";
 
-            // Activate the progress bar
-            _progressBar.IsIndeterminate = true;
-
             // If we are syncing directories
             if(_syncDirectories)
             {
                 // Loop through each chosen directory
-                foreach(var directory in _selectedDirectories)
+                foreach(var directory in Directories)
                 {
                     // Recursively synchronize it and its subdirectories with the destination
-                    SyncEngine.RecursivelySyncDirectory(_files, directory, saveDirectory, SyncAll);
+                    SyncEngine.RecursivelySyncDirectory(_files, new DirectoryInfo(directory.FullPath), saveDirectory, SyncAll);
                 }
 
                 SyncEngine.RecursivelyRemoveIfEmpty(saveDirectory);
@@ -131,9 +136,6 @@ namespace FileSync.ViewModels
                 // Otherwise, synchronize all chosen files with the destination
                 SyncEngine.SyncFiles(_files, saveDirectory, SyncAll);
             }
-
-            // Deactivate the progress bar
-            _progressBar.IsIndeterminate = false;
 
             // Set an appropriate status message
             StatusMessage = "Done!";

@@ -1,8 +1,12 @@
 ﻿using FileSync.ViewModels;
 using MahApps.Metro.Controls;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -54,7 +58,7 @@ namespace FileSync
             SyncAllToggle = ToggleSwitchSyncAll;
             ProgressBar = ProgressBarSync;
 
-            model = new MainWindowViewModel(ProgressBar);
+            model = new MainWindowViewModel();
 
             FileListView.ItemsSource = model.Files;
 
@@ -62,7 +66,32 @@ namespace FileSync
 
             SelectFilesButton.Click += new RoutedEventHandler((sender, target) =>
             {
-                model.SelectFiles();
+                var worker = new BackgroundWorker();
+
+                worker.DoWork += delegate (object a, DoWorkEventArgs args)
+                {
+                    model.SelectFiles();
+                };
+
+                worker.RunWorkerCompleted += delegate (object b, RunWorkerCompletedEventArgs args)
+                {
+                    //ProgressBar.IsIndeterminate = false;
+
+                    //foreach(var item in model.Files)
+                    //{
+                        FileListView.ItemsSource = null;
+                        FileListView.ItemsSource = model.Files;
+                        //FileListView.Items.Add(item);
+                    //}
+
+                    model.StatusMessage = $"{model.Files.Count} files selected";
+                    ProgressBar.IsIndeterminate = false;
+                    
+                };
+
+                ProgressBar.IsIndeterminate = true;
+                worker.RunWorkerAsync();
+
                 SetSyncButton();
             });
 

@@ -100,8 +100,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\Dialog.cs" />
+    <Compile Include="Helpers\DialogFactory.cs" />
+    <Compile Include="Helpers\AsyncFileHelper.cs" />
     <Compile Include="Helpers\FileHelper.cs" />
+    <Compile Include="Helpers\IDialog.cs" />
+    <Compile Include="Helpers\StaticFileHelper.cs" />
+    <Compile Include="Models\Directory.cs" />
     <Compile Include="Models\FileCollection.cs" />
+    <Compile Include="Models\IDirectory.cs" />
+    <Compile Include="Models\IDirectoryEngine.cs" />
+    <Compile Include="Helpers\IFileEngine.cs" />
+    <Compile Include="Helpers\IFileHelper.cs" />
     <Compile Include="Models\SyncEngine.cs" />
     <Compile Include="ViewModels\IMainWindowViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

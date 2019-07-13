@@ -7,7 +7,7 @@ namespace FileSync.Models
 {
     public static class SyncEngine
     {
-        public static void SyncFiles(ICollection<FileInfo> files, DirectoryInfo destination, bool syncAll)
+        public static void SyncFiles(FileCollection files, DirectoryInfo destination, bool syncAll)
         {
             // Choose the correct mode of synchronization
             if(syncAll)
@@ -22,16 +22,16 @@ namespace FileSync.Models
             }
         }
 
-        private static void SyncAllFiles(ICollection<FileInfo> files, DirectoryInfo destination)
+        private static void SyncAllFiles(FileCollection files, DirectoryInfo destination)
         {
             // Copy each file in the file list to the destination
             foreach(var f in files)
             {
-                FileHelper.CopyFile(f, destination);
+                StaticFileHelper.CopyFile(f, destination);
             }
         }
 
-        private static void SyncNewFiles(ICollection<FileInfo> files, DirectoryInfo destination)
+        private static void SyncNewFiles(FileCollection files, DirectoryInfo destination)
         {
             // Get the list of files in the base directory
             var currentFiles = destination.GetFiles();
@@ -48,12 +48,12 @@ namespace FileSync.Models
                 // If no duplicate file exists OR the current file is newer than the existing file, copy
                 if(existingFile == null || f.LastWriteTime > existingFile.LastWriteTime)
                 {
-                    FileHelper.CopyFile(f, destination);
+                    StaticFileHelper.CopyFile(f, destination);
                 }
             }
         }
 
-        public static void RecursivelySyncDirectory(FileCollection<FileInfo> files, DirectoryInfo directory, DirectoryInfo destination, bool forceOverwrite)
+        public static void RecursivelySyncDirectory(FileCollection files, DirectoryInfo directory, DirectoryInfo destination, bool forceOverwrite)
         {
             // Get the current directory's name
             var directoryName = directory.Name;
@@ -91,7 +91,7 @@ namespace FileSync.Models
                 // copy it to the destination directory
                 if(existingFile == null || forceOverwrite || existingFile.LastWriteTime < file.LastWriteTime)
                 {
-                    FileHelper.CopyFile(file, newDirectory);
+                    StaticFileHelper.CopyFile(file, newDirectory);
                 }
             }
 
