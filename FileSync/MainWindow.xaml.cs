@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace FileSync
 {
@@ -23,6 +24,8 @@ namespace FileSync
         private Button SelectFilesButton, SelectFoldersButton, SyncButton, ClearButton;
         private ListView FileListView;
         private ToggleSwitch SyncAllToggle;
+        private Views.ProgressBarWindow _progress;
+        private Dispatcher _dispatcher;
 
         private void TextBlock_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
@@ -46,14 +49,11 @@ namespace FileSync
             model.Files.Remove(file);
         }
 
-        private ProgressBar ProgressBar;
-
         private delegate void UpdateProgress(float value);
 
         private void UpdateProgressValue(float value)
         {
-            ProgressBarSync.Value = value;
-            //model.Progress = value;
+            _progress.Progress = value;
         }
 
         public MainWindow()
@@ -66,7 +66,6 @@ namespace FileSync
             ClearButton = ButtonClear;
             FileListView = ListViewFileList;
             SyncAllToggle = ToggleSwitchSyncAll;
-            ProgressBar = ProgressBarSync;
 
             model = new MainWindowViewModel();
 
@@ -78,13 +77,11 @@ namespace FileSync
             {
                 var worker = new BackgroundWorker();
 
-                var progress = new Views.ProgressBarWindow
+                _progress = new Views.ProgressBarWindow
                 {
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                     Owner = this
                 };
-
-                var dispatcher = progress.Dispatcher;
 
                 worker.DoWork += delegate (object a, DoWorkEventArgs args)
                 {
@@ -96,16 +93,16 @@ namespace FileSync
                     FileListView.ItemsSource = null;
                     FileListView.ItemsSource = model.Files;
 
-                    model.StatusMessage = $"{model.Files.Count} files selected";
-                    //ProgressBar.IsIndeterminate = false;
-                    progress.IsIndeterminate = false;
-                    progress.Close();
+                    model.StatusMessage = $"Done!";
+                    _progress.IsIndeterminate = false;
+                    _progress.Close();
                     SetSyncButton();
+
+                    FileCountMessageBox.Text = $"{model.Files.Count} files selected";
                 };
 
-                //ProgressBar.IsIndeterminate = true;
-                progress.IsIndeterminate = true;
-                progress.Show();
+                _progress.IsIndeterminate = true;
+                _progress.Show();
                 worker.RunWorkerAsync();
             });
 
@@ -113,22 +110,24 @@ namespace FileSync
             {
                 var worker = new BackgroundWorker();
 
-                var dispatcher = ProgressBar.Dispatcher;
+                _progress = new Views.ProgressBarWindow
+                {
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Owner = this
+                };
+
+                _dispatcher = _progress.Dispatcher;
 
                 var update = new UpdateProgress(UpdateProgressValue);
 
                 worker.DoWork += delegate (object a, DoWorkEventArgs args)
                 {
                     Dispatcher.Invoke(() => model.SelectFolders());
-                    //Dispatcher.Invoke(() => ProgressBar.IsIndeterminate = false);
+                    Dispatcher.Invoke(() => _progress.IsIndeterminate = false);
 
                     int num = 0, total = model.Directories.Count;
 
                     var collection = new FileCollection();
-
-                    //UpdateProgress update = new UpdateProgress(UpdateProgressValue);
-
-                    //model.Maximum = total;
 
                     foreach(var directory in model.Directories)
                     {
@@ -141,8 +140,10 @@ namespace FileSync
                         float value = (float)num / (float)total;
                         value *= 100;
 
-                        //dispatcher.Invoke(update, value);
-                        Dispatcher.Invoke(update, value);
+                        //Dispatcher.Invoke(update, value);
+                        _dispatcher.Invoke(update, value);
+
+                        System.Threading.Thread.Sleep(5);
                     }
 
                     model.Files = collection;
@@ -150,72 +151,17 @@ namespace FileSync
 
                 worker.RunWorkerCompleted += delegate (object b, RunWorkerCompletedEventArgs args)
                 {
+                    FileListView.ItemsSource = null;
                     FileListView.ItemsSource = model.Files;
+                    model.StatusMessage = "Done!";
+                    FileCountMessageBox.Text = $"{model.Files.Count} files selected";
                     SetSyncButton();
-                    //var worker2 = new BackgroundWorker();
-
-                    ////var dispatcher = ProgressBar.Dispatcher;
-
-                    //worker2.DoWork += delegate (object c, DoWorkEventArgs args2)
-                    //{
-                    //    int num = 0, total = model.Directories.Count;
-
-                    //    var collection = new FileCollection();
-
-                    //    //UpdateProgress update = new UpdateProgress(UpdateProgressValue);
-
-                    //    //model.Maximum = total;
-
-                    //    foreach(var directory in model.Directories)
-                    //    {
-                    //        var files = directory.Files;
-                    //        var subdirs = directory.Directories;
-
-                    //        collection.AddRange(files);
-                    //        num += 1;
-
-                    //        float value = (float)num / (float)total;
-                    //        value *= 100;
-
-                    //        dispatcher.Invoke(update, value);
-                    //    }
-
-                    //    model.Files = collection;
-                    //};
-
-                    //worker2.RunWorkerCompleted += delegate (object d, RunWorkerCompletedEventArgs args2)
-                    //{
-                    //    FileListView.ItemsSource = model.Files;
-                    //    model.StatusMessage = $"{model.Files.Count} files selected";
-                    //    SetSyncButton();
-                    //};
-
-
-                    //ProgressBar.IsIndeterminate = false;
-                    //worker2.RunWorkerAsync();
-
-                    //int num = 0, total = model.Directories.Count;
-
-                    //var collection = new FileCollection();
-
-                    //foreach(var directory in model.Directories)
-                    //{
-                    //    var files = directory.Files;
-                    //    var subdirs = directory.Directories;
-
-                    //    collection.AddRange(files);
-                    //    num += 1;
-
-                    //    Dispatcher.Invoke(() => ProgressBar.Value = (double)(((decimal)num / (decimal)total) * 100));
-                    //}
-
-                    //model.Files = collection;
-                    //FileListView.ItemsSource = model.Files;
-                    //model.StatusMessage = $"{model.Files.Count} files selected";
-                    //SetSyncButton();
+                    _progress.Close();
                 };
 
-                ProgressBar.IsIndeterminate = true;
+                //ProgressBar.IsIndeterminate = true;
+                _progress.IsIndeterminate = true;
+                _progress.Show();
                 worker.RunWorkerAsync();
             });
 

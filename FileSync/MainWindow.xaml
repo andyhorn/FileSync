@@ -88,13 +88,9 @@
                     <Label Content="Status:"/>
                     <Label Content="{Binding StatusMessage}"/>
                 </StackPanel>
-                <ProgressBar Name="ProgressBarSync" 
-                                           HorizontalAlignment="Right"
-                                           VerticalAlignment="Center"
-                                           Height="10"
-                                           Width="200"
-                                           Maximum="100"
-                                           Minimum="0"/>
+                <TextBlock HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Name="FileCountMessageBox"/>
             </Grid>
         </Grid>
     </Grid>
