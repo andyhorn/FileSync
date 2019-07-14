@@ -145,7 +145,9 @@ namespace FileSync.ViewModels
                 {
                     // Synchronize it with the selected destination directory,
                     // using the list of files as a filter
-                    syncEngine.Sync(saveDirectory, directory, Files);
+                    var path = syncEngine.GetPath(saveDirectory.FullPath, directory.Name);
+                    var destination = new Models.Directory(path);
+                    syncEngine.Sync(destination, directory, Files);
                 }
             }
             else

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -50,18 +49,17 @@ namespace FileSync.Models
                 ? GetFilteredList(sourceContents, files)
                 : sourceContents;
 
-            // Check if the destination contains the source directory
-            var dest = new Directory(GetPath(destination.FullPath, source.Name));
-
-            if(!dest.Exists)
+            // Check if the destination directory exists,
+            // create the directory if needed
+            if(!destination.Exists)
             {
-                dest.Create();
+                destination.Create();
             }
 
             // Loop through the toCopy list and copy each item to the destination
             foreach(var item in toCopy)
             {
-                var path = GetPath(dest.FullPath, item.Name);
+                var path = GetPath(destination.FullPath, item.Name);
                 Copy(item, path);
             }
 
@@ -71,16 +69,10 @@ namespace FileSync.Models
                 foreach(var subdirectory in subdirectories)
                 {
                     // Get the new path within the destination
-                    var path = GetPath(dest.FullPath, subdirectory.Name);
+                    var path = GetPath(destination.FullPath, subdirectory.Name);
 
                     // Create a directory object
                     var newDestination = new Directory(path);
-
-                    // If the folder doesn't exist, create it
-                    //if(!newDestination.Exists)
-                    //{
-                    //    newDestination.Create();
-                    //}
 
                     // Recurse through this algorithm
                     Sync(newDestination, subdirectory, files);
@@ -102,14 +94,14 @@ namespace FileSync.Models
             }
         }
 
-        private string GetPath(string directory, string file)
+        public string GetPath(string directory, string file)
         {
-            return System.IO.Path.Combine(directory, file);
+            return Path.Combine(directory, file);
         }
 
-        private void Copy(System.IO.FileInfo file, string path)
+        private void Copy(FileInfo file, string path)
         {
-            var destinationFile = new System.IO.FileInfo(path);
+            var destinationFile = new FileInfo(path);
             var fileExists = destinationFile.Exists;
 
             switch(Overwrite)
