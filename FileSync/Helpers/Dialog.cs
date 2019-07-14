@@ -4,6 +4,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows.Forms;
 
 namespace FileSync.Helpers
 {
@@ -11,7 +12,7 @@ namespace FileSync.Helpers
     {
         public FileCollection PickFiles()
         {
-            var dialog = new OpenFileDialog
+            var dialog = new Microsoft.Win32.OpenFileDialog
             {
                 Multiselect = true
             };
@@ -31,7 +32,7 @@ namespace FileSync.Helpers
 
             return null;
         }
-
+        
         public ICollection<IDirectory> PickFolders()
         {
             var dialog = new CommonOpenFileDialog
@@ -44,6 +45,10 @@ namespace FileSync.Helpers
             if(dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 var collection = new Collection<IDirectory>();
+
+                //var dir = new Models.Directory(dialog.SelectedPath);
+
+                //collection.Add(dir);
 
                 foreach(var pathname in dialog.FileNames)
                 {

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 
@@ -8,6 +10,7 @@ namespace FileSync.Models
     {
         private DirectoryInfo _dirInfo;
         public FileCollection Files { get; set; }
+        public ICollection<IDirectory> Directories { get; set; }
         public string Name { get; set; }
         public string FullPath { get; set; }
         public bool Exists { get; private set; }
@@ -23,6 +26,15 @@ namespace FileSync.Models
             if(_dirInfo.Exists)
             {
                 Files = new FileCollection(_dirInfo.GetFiles().ToArray());
+                Directories = new Collection<IDirectory>();
+
+                var dirs = _dirInfo.GetDirectories();
+
+                foreach(var dir in dirs)
+                {
+                    var newDir = new Directory(dir.FullName);
+                    Directories.Add(newDir);
+                }
 
                 Exists = true;
 

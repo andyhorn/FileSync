@@ -88,14 +88,13 @@
                     <Label Content="Status:"/>
                     <Label Content="{Binding StatusMessage}"/>
                 </StackPanel>
-                <Controls:MetroProgressBar Name="ProgressBarSync" 
+                <ProgressBar Name="ProgressBarSync" 
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Height="10"
                                            Width="200"
-                                           Maximum="{Binding Maximum}"
-                                           Value="{Binding Progress}"
-                                           Minimum="{Binding Minimum}"/>
+                                           Maximum="100"
+                                           Minimum="0"/>
             </Grid>
         </Grid>
     </Grid>

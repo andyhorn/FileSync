@@ -9,6 +9,7 @@ namespace FileSync.Models
     public interface IDirectory
     {
         FileCollection Files { get; set; }
+        ICollection<IDirectory> Directories { get; set; }
         string Name { get; set; }
         string FullPath { get; set; }
         DateTime DateCreated { get; set; }

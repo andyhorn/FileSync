@@ -11,5 +11,6 @@ namespace FileSync.Models
     {
         void SyncDirectory(IDirectory source, IDirectory destination);
         void SyncDirectory(IDirectory source, IDirectory destination, FileCollection files);
+        ICollection<IDirectory> GetSubdirectories(IDirectory root);
     }
 }

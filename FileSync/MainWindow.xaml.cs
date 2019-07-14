@@ -1,4 +1,5 @@
-﻿using FileSync.ViewModels;
+﻿using FileSync.Models;
+using FileSync.ViewModels;
 using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,15 @@ namespace FileSync
         }
 
         private ProgressBar ProgressBar;
+
+        private delegate void UpdateProgress(float value);
+
+        private void UpdateProgressValue(float value)
+        {
+            ProgressBarSync.Value = value;
+            //model.Progress = value;
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -75,30 +85,126 @@ namespace FileSync
 
                 worker.RunWorkerCompleted += delegate (object b, RunWorkerCompletedEventArgs args)
                 {
-                    //ProgressBar.IsIndeterminate = false;
-
-                    //foreach(var item in model.Files)
-                    //{
-                        FileListView.ItemsSource = null;
-                        FileListView.ItemsSource = model.Files;
-                        //FileListView.Items.Add(item);
-                    //}
+                    FileListView.ItemsSource = null;
+                    FileListView.ItemsSource = model.Files;
 
                     model.StatusMessage = $"{model.Files.Count} files selected";
                     ProgressBar.IsIndeterminate = false;
-                    
+                    SetSyncButton();
                 };
 
                 ProgressBar.IsIndeterminate = true;
                 worker.RunWorkerAsync();
-
-                SetSyncButton();
             });
 
             SelectFoldersButton.Click += new RoutedEventHandler((sender, target) =>
             {
-                model.SelectFolders();
-                SetSyncButton();
+                var worker = new BackgroundWorker();
+
+                var dispatcher = ProgressBar.Dispatcher;
+
+                var update = new UpdateProgress(UpdateProgressValue);
+
+                worker.DoWork += delegate (object a, DoWorkEventArgs args)
+                {
+                    Dispatcher.Invoke(() => model.SelectFolders());
+                    Dispatcher.Invoke(() => ProgressBar.IsIndeterminate = false);
+
+                    int num = 0, total = model.Directories.Count;
+
+                    var collection = new FileCollection();
+
+                    //UpdateProgress update = new UpdateProgress(UpdateProgressValue);
+
+                    //model.Maximum = total;
+
+                    foreach(var directory in model.Directories)
+                    {
+                        var files = directory.Files;
+                        var subdirs = directory.Directories;
+
+                        collection.AddRange(files);
+                        num += 1;
+
+                        float value = (float)num / (float)total;
+                        value *= 100;
+
+                        //dispatcher.Invoke(update, value);
+                        Dispatcher.Invoke(update, value);
+                    }
+
+                    model.Files = collection;
+                };
+
+                worker.RunWorkerCompleted += delegate (object b, RunWorkerCompletedEventArgs args)
+                {
+                    FileListView.ItemsSource = model.Files;
+                    SetSyncButton();
+                    //var worker2 = new BackgroundWorker();
+
+                    ////var dispatcher = ProgressBar.Dispatcher;
+
+                    //worker2.DoWork += delegate (object c, DoWorkEventArgs args2)
+                    //{
+                    //    int num = 0, total = model.Directories.Count;
+
+                    //    var collection = new FileCollection();
+
+                    //    //UpdateProgress update = new UpdateProgress(UpdateProgressValue);
+
+                    //    //model.Maximum = total;
+
+                    //    foreach(var directory in model.Directories)
+                    //    {
+                    //        var files = directory.Files;
+                    //        var subdirs = directory.Directories;
+
+                    //        collection.AddRange(files);
+                    //        num += 1;
+
+                    //        float value = (float)num / (float)total;
+                    //        value *= 100;
+
+                    //        dispatcher.Invoke(update, value);
+                    //    }
+
+                    //    model.Files = collection;
+                    //};
+
+                    //worker2.RunWorkerCompleted += delegate (object d, RunWorkerCompletedEventArgs args2)
+                    //{
+                    //    FileListView.ItemsSource = model.Files;
+                    //    model.StatusMessage = $"{model.Files.Count} files selected";
+                    //    SetSyncButton();
+                    //};
+
+
+                    //ProgressBar.IsIndeterminate = false;
+                    //worker2.RunWorkerAsync();
+
+                    //int num = 0, total = model.Directories.Count;
+
+                    //var collection = new FileCollection();
+
+                    //foreach(var directory in model.Directories)
+                    //{
+                    //    var files = directory.Files;
+                    //    var subdirs = directory.Directories;
+
+                    //    collection.AddRange(files);
+                    //    num += 1;
+
+                    //    Dispatcher.Invoke(() => ProgressBar.Value = (double)(((decimal)num / (decimal)total) * 100));
+                    //}
+
+                    //model.Files = collection;
+                    //FileListView.ItemsSource = model.Files;
+                    //model.StatusMessage = $"{model.Files.Count} files selected";
+                    //SetSyncButton();
+                };
+
+                ProgressBar.IsIndeterminate = true;
+                worker.RunWorkerAsync();
             });
 
             SyncButton.Click += new RoutedEventHandler((sender, target) =>

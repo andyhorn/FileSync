@@ -107,6 +107,7 @@
     <Compile Include="Helpers\IDialog.cs" />
     <Compile Include="Helpers\StaticFileHelper.cs" />
     <Compile Include="Models\Directory.cs" />
+    <Compile Include="Models\DirectoryEngine.cs" />
     <Compile Include="Models\FileCollection.cs" />
     <Compile Include="Models\IDirectory.cs" />
     <Compile Include="Models\IDirectoryEngine.cs" />

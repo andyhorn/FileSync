@@ -10,9 +10,9 @@ namespace FileSync.ViewModels
         FileCollection Files { get; set; }
         ICollection<IDirectory> Directories { get; set; }
         string StatusMessage { get; set; }
-        int Progress { get; set; }
-        int Maximum { get; set; }
-        int Minimum { get; set; }
+        double Progress { get; set; }
+        double Maximum { get; set; }
+        double Minimum { get; set; }
 
         void SelectFiles();
 

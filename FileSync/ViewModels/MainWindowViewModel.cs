@@ -12,7 +12,7 @@ namespace FileSync.ViewModels
     {
         private FileCollection _files;
         private string _status;
-        private int _maximum, _minimum, _progress;
+        private double _maximum, _minimum, _progress;
         private bool _syncDirectories;
 
         public bool SyncAll { get; set; }
@@ -27,7 +27,7 @@ namespace FileSync.ViewModels
                 OnPropertyChanged("StatusMessage");
             }
         }
-        public int Maximum
+        public double Maximum
         {
             get => _maximum;
             set
@@ -36,7 +36,7 @@ namespace FileSync.ViewModels
                 OnPropertyChanged("Maximum");
             }
         }
-        public int Minimum
+        public double Minimum
         {
             get => _minimum;
             set
@@ -45,7 +45,7 @@ namespace FileSync.ViewModels
                 OnPropertyChanged("Minimum");
             }
         }
-        public int Progress
+        public double Progress
         {
             get => _progress;
             set
@@ -61,6 +61,9 @@ namespace FileSync.ViewModels
         {
             Directories = new Collection<IDirectory>();
             _files = new FileCollection();
+
+            Minimum = 0;
+            Maximum = 100;
 
             StatusMessage = "Ready";
         }
@@ -84,25 +87,25 @@ namespace FileSync.ViewModels
             _syncDirectories = false;
         }
 
-        public async void SelectFolders()
+        public void SelectFolders()
         {
-            // Use the file helper to select one or more directories from which to copy files
-            //StaticFileHelper.SelectFolders(ref _files, ref _selectedDirectories);
-            //Directories = _dialog.PickFolders();
-            Directories = DialogFactory.New().PickFolders();
+            var engine = new DirectoryEngine();
 
-            foreach(var directory in Directories)
+            // Select one or more directories from which to copy files
+            var selected = DialogFactory.New().PickFolders();
+
+            foreach(var selection in selected)
             {
-                await AsyncFileHelper.CopyFiles(directory.Files, _files);
+                var directories = engine.GetSubdirectories(selection);
+
+                foreach(var directory in directories)
+                {
+                    Directories.Add(directory);
+                }
             }
 
             // Set the flag to signify we have directories to copy along with their files
             _syncDirectories = true;
-
-            // Set an appropriate status message
-            StatusMessage = $"{_files.Count} files selected.";
-
-            OnPropertyChanged("Files");
         }
 
         public void Sync()
