@@ -10,7 +10,6 @@
     {
         Overwrite Overwrite { get; set; }
         void Sync(IDirectory destination, IDirectory source, FileCollection files);
-        void Sync(IDirectory destination, IDirectory source);
         void Sync(IDirectory destination, FileCollection files);
     }
 }

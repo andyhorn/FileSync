@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace FileSync.Models
 {
@@ -24,14 +27,21 @@ namespace FileSync.Models
         /// <param name="destination"></param>
         /// <param name="source"></param>
         /// <param name="files"></param>
-        public void Sync(IDirectory destination, IDirectory source, FileCollection files)
+        public void Sync(IDirectory destination, IDirectory source, FileCollection files = null)
         {
             // Get a list of all files in source directory
             var sourceContents = source.Files;
 
+            // Get a list of the subdirectories
+            var subdirectories = source.Directories;
+
             // Create a filtered list of items to copy based on the contents
-            // of the files collection
-            var toCopy = sourceContents.Where(x => files.Contains(x));
+            // of the files collection filter (if applicable)
+            IEnumerable<FileInfo> toCopy = files != null
+                ? sourceContents.Where(x => files.Contains(x))
+                : sourceContents;
+
+            //var toCopy = sourceContents.Where(x => files.Contains(x));
 
             // Loop through the toCopy list and copy each item to the destination
             foreach(var item in toCopy)
@@ -39,25 +49,27 @@ namespace FileSync.Models
                 var path = GetPath(destination.FullPath, item.Name);
                 Copy(item, path);
             }
-        }
 
-        /// <summary>
-        /// Synchronizes a source directory with a destination directory,
-        /// copying over all files.
-        /// </summary>
-        /// <param name="destination"></param>
-        /// <param name="source"></param>
-        public void Sync(IDirectory destination, IDirectory source)
-        {
-            // Get the list of files in the source directory
-            var fileList = source.Files;
-
-            // Loop through the list and copy each file
-            // to the destination directory
-            foreach(var file in fileList)
+            if(subdirectories.Any())
             {
-                var path = GetPath(destination.FullPath, file.Name);
-                Copy(file, path);
+                // For each subdirectory
+                foreach(var subdirectory in subdirectories)
+                {
+                    // Get the new path within the destination
+                    var path = GetPath(destination.FullPath, subdirectory.Name);
+
+                    // Create a directory object
+                    var newDestination = new Directory(path);
+
+                    // If the folder doesn't exist, create it
+                    if(!newDestination.Exists)
+                    {
+                        newDestination.Create();
+                    }
+
+                    // Recurse through this algorithm
+                    Sync(newDestination, subdirectory, files);
+                }
             }
         }
 
