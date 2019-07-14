@@ -45,11 +45,36 @@
                         Style="{StaticResource AccentedSquareButtonStyle}"/>
             </StackPanel>
 
-            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label Content="Sync New" VerticalAlignment="Center"/>
-                <Controls:ToggleSwitch OnLabel="" OffLabel="" Name="ToggleSwitchSyncAll" OffSwitchBrush="Teal" OnSwitchBrush="Teal"/>
-                <Label Content="Sync All" VerticalAlignment="Center"/>
-            </StackPanel>
+            <UniformGrid Grid.Row="0" Grid.Column="0"
+                         Rows="2" Columns="1" HorizontalAlignment="Center"
+                         Margin="0">
+                <UniformGrid Rows="1" Columns="3" Margin="0"
+                             MaxHeight="15">
+                    <Label Content="None" 
+                       Padding="0 0 10 0"
+                       Margin="0"
+                       HorizontalAlignment="Left"/>
+                    <Label Content="New" 
+                       Padding="10 0"
+                       Margin="0"
+                       HorizontalAlignment="Center"/>
+                    <Label Content="All" 
+                       Padding="10 0 0 0"
+                       Margin="0"
+                       HorizontalAlignment="Right"/>
+                </UniformGrid>
+                <Slider Style="{DynamicResource FlatSlider}"
+                        Name="SyncOptionSlider"
+                        Cursor="Hand"
+                        IsSnapToTickEnabled="True"
+                        TickPlacement="TopLeft"
+                        TickFrequency="1"
+                        Minimum="0"
+                        Maximum="2"
+                        Margin="0 0 0 5"/>
+            </UniformGrid>
+
+
 
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal"
                         HorizontalAlignment="Right">

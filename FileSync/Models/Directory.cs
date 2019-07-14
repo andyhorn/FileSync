@@ -83,5 +83,32 @@ namespace FileSync.Models
                 _dirInfo = null;
             }
         }
+
+        public static ICollection<IDirectory> GetAllContents(IDirectory root)
+        {
+            var collection = RecurseDirectories(root);
+
+            return collection;
+        }
+
+        private static ICollection<IDirectory> RecurseDirectories(IDirectory root)
+        {
+            var subDirs = root.Directories;
+            var collection = new Collection<IDirectory>();
+
+            foreach(var subDir in subDirs)
+            {
+                var contents = RecurseDirectories(subDir);
+
+                foreach(var item in contents)
+                {
+                    collection.Add(item);
+                }
+
+                collection.Add(subDir);
+            }
+
+            return collection;
+        }
     }
 }

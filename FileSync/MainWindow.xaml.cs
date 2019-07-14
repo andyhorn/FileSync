@@ -2,15 +2,10 @@
 using FileSync.ViewModels;
 using MahApps.Metro.Controls;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace FileSync
@@ -23,7 +18,7 @@ namespace FileSync
         private IMainWindowViewModel model;
         private Button SelectFilesButton, SelectFoldersButton, SyncButton, ClearButton;
         private ListView FileListView;
-        private ToggleSwitch SyncAllToggle;
+        private Slider SyncSlider;
         private Views.ProgressBarWindow _progress;
         private Dispatcher _dispatcher;
 
@@ -57,6 +52,21 @@ namespace FileSync
             _progress.Progress = value;
         }
 
+        private Overwrite GetSyncValue(double value)
+        {
+            switch(value)
+            {
+                case 0:
+                    return Overwrite.None;
+                case 1:
+                    return Overwrite.New;
+                case 2:
+                    return Overwrite.All;
+                default:
+                    throw new ArgumentOutOfRangeException("Overwrite");
+            }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -66,9 +76,12 @@ namespace FileSync
             SyncButton = ButtonSync;
             ClearButton = ButtonClear;
             FileListView = ListViewFileList;
-            SyncAllToggle = ToggleSwitchSyncAll;
+            SyncSlider = SyncOptionSlider;
 
-            model = new MainWindowViewModel();
+            model = new MainWindowViewModel
+            {
+                Overwrite = GetSyncValue(SyncSlider.Value)
+            };
 
             FileListView.ItemsSource = model.Files;
 
@@ -97,7 +110,6 @@ namespace FileSync
                     model.StatusMessage = $"Done!";
                     _progress.IsIndeterminate = false;
                     _progress.Close();
-                    SetSyncButton();
 
                     //FileCountMessageBox.Text = $"{model.Files.Count} files selected";
                 };
@@ -138,12 +150,10 @@ namespace FileSync
                         collection.AddRange(files);
                         num += 1;
 
-                        float value = (float)num / (float)total;
+                        float value = num / (float)total;
                         value *= 100;
-                        
-                        _dispatcher.Invoke(update, value);
 
-                        //System.Threading.Thread.Sleep(5);
+                        _dispatcher.Invoke(update, value);
                     }
 
                     model.Files = collection;
@@ -154,11 +164,9 @@ namespace FileSync
                     FileListView.ItemsSource = null;
                     FileListView.ItemsSource = model.Files;
                     model.StatusMessage = "Files scanned; ready to sync.";
-                    //FileCountMessageBox.Text = $"{model.Files.Count} files selected";
-                    SetSyncButton();
                     _progress.Close();
                 };
-                
+
                 _progress.IsIndeterminate = true;
                 _progress.Show();
                 worker.RunWorkerAsync();
@@ -172,18 +180,14 @@ namespace FileSync
             ClearButton.Click += new RoutedEventHandler((sender, target) =>
             {
                 model.Clear();
-                SetSyncButton();
             });
 
-            SyncAllToggle.IsCheckedChanged += new EventHandler((sender, target) =>
+            SyncOptionSlider.ValueChanged += new RoutedPropertyChangedEventHandler<double>((sender, target) =>
             {
-                model.SyncAll = (bool)(sender as ToggleSwitch).IsChecked;
-            });
-        }
+                var value = (sender as Slider).Value;
 
-        private void SetSyncButton()
-        {
-            //SyncButton.IsEnabled = model.Files.Count > 0;
+                model.Overwrite = GetSyncValue(value);
+            });
         }
     }
 }

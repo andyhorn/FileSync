@@ -5,7 +5,8 @@ namespace FileSync.Helpers
 {
     public interface IDialog
     {
-        ICollection<IDirectory> PickFolders();
-        FileCollection PickFiles();
+        ICollection<IDirectory> OpenFolders();
+        FileCollection OpenFiles();
+        IDirectory SaveFolder();
     }
 }

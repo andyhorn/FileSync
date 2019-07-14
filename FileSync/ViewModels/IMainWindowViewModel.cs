@@ -6,14 +6,11 @@ namespace FileSync.ViewModels
 {
     public interface IMainWindowViewModel
     {
-        bool SyncAll { get; set; }
+        Overwrite Overwrite { get; set; }
         FileCollection Files { get; set; }
         ICollection<IDirectory> Directories { get; set; }
         string StatusMessage { get; set; }
         string FileCount { get; }
-        double Progress { get; set; }
-        double Maximum { get; set; }
-        double Minimum { get; set; }
 
         void SelectFiles();
 

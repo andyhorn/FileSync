@@ -3,12 +3,13 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows.Forms;
 
 namespace FileSync.Helpers
 {
     public class Dialog : IDialog
     {
-        public FileCollection PickFiles()
+        public FileCollection OpenFiles()
         {
             var dialog = new Microsoft.Win32.OpenFileDialog
             {
@@ -31,7 +32,7 @@ namespace FileSync.Helpers
             return null;
         }
 
-        public ICollection<IDirectory> PickFolders()
+        public ICollection<IDirectory> OpenFolders()
         {
             var dialog = new CommonOpenFileDialog
             {
@@ -56,6 +57,22 @@ namespace FileSync.Helpers
                 }
 
                 return collection;
+            }
+
+            return null;
+        }
+
+        public IDirectory SaveFolder()
+        {
+            var dialog = new FolderBrowserDialog
+            {
+                ShowNewFolderButton = true
+            };
+
+            if(dialog.ShowDialog() == DialogResult.OK)
+            {
+                var selectedPath = dialog.SelectedPath;
+                return new Models.Directory(selectedPath);
             }
 
             return null;

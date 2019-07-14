@@ -4,34 +4,42 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Windows.Threading;
 
 namespace FileSync.ViewModels
 {
     public class MainWindowViewModel : IMainWindowViewModel, INotifyPropertyChanged
     {
-        private FileCollection _files;
-        private string _status;
-        private double _maximum, _minimum, _progress;
-        private bool _syncDirectories;
+        private FileCollection files;
+        private string status;
+        private bool syncDirectories;
+        private ISyncEngine syncEngine;
+        private Overwrite overwrite;
 
-        public bool SyncAll { get; set; }
-        public FileCollection Files
+        public Overwrite Overwrite
         {
-            get => _files;
+            get => overwrite;
             set
             {
-                _files = value;
+                overwrite = value;
+                syncEngine.Overwrite = Overwrite;
+            }
+        }
+        public FileCollection Files
+        {
+            get => files;
+            set
+            {
+                files = value;
                 FilesChanged();
             }
         }
         public ICollection<IDirectory> Directories { get; set; }
         public string StatusMessage
         {
-            get => _status;
+            get => status;
             set
             {
-                _status = value;
+                status = value;
                 OnPropertyChanged("StatusMessage");
             }
         }
@@ -39,43 +47,15 @@ namespace FileSync.ViewModels
         {
             get => $"{Files.Count} files selected";
         }
-        public double Maximum
-        {
-            get => _maximum;
-            set
-            {
-                _maximum = value;
-                OnPropertyChanged("Maximum");
-            }
-        }
-        public double Minimum
-        {
-            get => _minimum;
-            set
-            {
-                _minimum = value;
-                OnPropertyChanged("Minimum");
-            }
-        }
-        public double Progress
-        {
-            get => _progress;
-            set
-            {
-                _progress = value;
-                OnPropertyChanged("Progress");
-            }
-        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindowViewModel()
         {
             Directories = new Collection<IDirectory>();
-            _files = new FileCollection();
+            Files = new FileCollection();
 
-            Minimum = 0;
-            Maximum = 100;
+            syncEngine = new SyncEngine();
 
             StatusMessage = "Ready";
         }
@@ -83,33 +63,36 @@ namespace FileSync.ViewModels
         public void SelectFiles()
         {
             // Select one or more files
-            var files = DialogFactory.New().PickFiles();
+            var files = DialogFactory.New().OpenFiles();
 
-            // If no files were selected (user clicked "Cancel"),
+            // If no files were selected (e.g., user clicked "Cancel"),
             // do not update any model data
             if(files == null)
             {
                 return;
             }
 
-            // Save the selected files to the Files property
+            // Save the selected files to the Files property,
+            // this will also trigger the update notification
             Files = files;
 
             // Set the sync flag to signify we only have files to copy, not directories
-            _syncDirectories = false;
+            syncDirectories = false;
         }
 
         public void SelectFolders()
         {
-            var engine = new DirectoryEngine();
-
             // Select one or more directories from which to copy files
-            var selected = DialogFactory.New().PickFolders();
+            var selected = DialogFactory.New().OpenFolders();
 
+            // For each directory selected by the user
             foreach(var selection in selected)
             {
-                var directories = engine.GetSubdirectories(selection);
+                // Recursively scan the contents of the directory 
+                // and all of its subdirectories
+                var directories = Models.Directory.GetAllContents(selection);
 
+                // Add each subdirectory to the master directory list
                 foreach(var directory in directories)
                 {
                     Directories.Add(directory);
@@ -117,13 +100,13 @@ namespace FileSync.ViewModels
             }
 
             // Set the flag to signify we have directories to copy along with their files
-            _syncDirectories = true;
+            syncDirectories = true;
         }
 
         public void Sync()
         {
-            // Use the file helper to locate a save directory
-            var saveDirectory = StaticFileHelper.SelectDirectory();
+            // Select a save directory
+            var saveDirectory = DialogFactory.New().SaveFolder();
 
             // If no directory was chosen, return early
             if(saveDirectory == null)
@@ -131,25 +114,27 @@ namespace FileSync.ViewModels
                 return;
             }
 
+            // Set the synchronization settings
+            //syncEngine.Overwrite = Overwrite;
+
             // Set an appropriate status message
             StatusMessage = $"Syncing...";
 
-            // If we are syncing directories
-            if(_syncDirectories)
+            // If we are synchronizing one or more directories
+            if(syncDirectories)
             {
-                // Loop through each chosen directory
+                // Loop through each directory
                 foreach(var directory in Directories)
                 {
-                    // Recursively synchronize it and its subdirectories with the destination
-                    SyncEngine.RecursivelySyncDirectory(_files, new DirectoryInfo(directory.FullPath), saveDirectory, SyncAll);
+                    // Synchronize it with the selected destination directory,
+                    // using the list of files as a filter
+                    syncEngine.Sync(saveDirectory, directory, Files);
                 }
-
-                SyncEngine.RecursivelyRemoveIfEmpty(saveDirectory);
             }
             else
             {
-                // Otherwise, synchronize all chosen files with the destination
-                SyncEngine.SyncFiles(_files, saveDirectory, SyncAll);
+                // Otherwise, synchronize all files to the destination directory
+                syncEngine.Sync(saveDirectory, Files);
             }
 
             // Set an appropriate status message
@@ -158,17 +143,22 @@ namespace FileSync.ViewModels
 
         public void Clear()
         {
-            _files.Clear();
+            // Remove all files from the collection
+            files.Clear();
 
+            // Signal that the files have changed
             FilesChanged();
 
+            // Update the status message
             StatusMessage = "Ready";
         }
 
         public void Remove(FileInfo file)
         {
+            // Remove the file from the collection
             Files.Remove(file);
 
+            // Signal that the file collection has changed
             FilesChanged();
         }
 
@@ -179,6 +169,7 @@ namespace FileSync.ViewModels
 
         public void FilesChanged()
         {
+            // Signal that the file collection and file count has changed
             OnPropertyChanged("Files");
             OnPropertyChanged("FileCount");
         }
