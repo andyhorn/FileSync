@@ -88,16 +88,33 @@ namespace FileSync.ViewModels
             // For each directory selected by the user
             foreach(var selection in selected)
             {
+                Directories.Add(selection);
                 // Recursively scan the contents of the directory 
                 // and all of its subdirectories
-                var directories = Models.Directory.GetAllContents(selection);
+                //var directories = Models.Directory.GetAllContents(selection);
 
-                // Add each subdirectory to the master directory list
-                foreach(var directory in directories)
+                //// Add each subdirectory to the master directory list
+                //foreach(var directory in directories)
+                //{
+                //    Directories.Add(directory);
+                //}
+            }
+
+            var files = new FileCollection();
+
+            foreach(var dir in Directories)
+            {
+                files.AddRange(dir.Files);
+
+                var subdirs = Models.Directory.GetAllContents(dir);
+
+                foreach(var subdir in subdirs)
                 {
-                    Directories.Add(directory);
+                    files.AddRange(subdir.Files);
                 }
             }
+
+            Files = files;
 
             // Set the flag to signify we have directories to copy along with their files
             syncDirectories = true;

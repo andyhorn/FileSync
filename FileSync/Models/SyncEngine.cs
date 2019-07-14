@@ -19,6 +19,15 @@ namespace FileSync.Models
         {
             Overwrite = overwrite;
         }
+        private IEnumerable<FileInfo> GetFilteredList(FileCollection original, FileCollection filter)
+        {
+            var filterList = filter.ToList().Select(f => f.Name);
+            var originalList = original.ToList();
+
+            var filteredList = originalList.Where(x => filterList.FirstOrDefault(f => x.Name.Equals(f)) != null);
+
+            return filteredList;
+        }
         public Overwrite Overwrite { get; set; }
         /// <summary>
         /// Synchronizes a source directory with a destination directory,
@@ -37,16 +46,22 @@ namespace FileSync.Models
 
             // Create a filtered list of items to copy based on the contents
             // of the files collection filter (if applicable)
-            IEnumerable<FileInfo> toCopy = files != null
-                ? sourceContents.Where(x => files.Contains(x))
+            var toCopy = files != null
+                ? GetFilteredList(sourceContents, files)
                 : sourceContents;
 
-            //var toCopy = sourceContents.Where(x => files.Contains(x));
+            // Check if the destination contains the source directory
+            var dest = new Directory(GetPath(destination.FullPath, source.Name));
+
+            if(!dest.Exists)
+            {
+                dest.Create();
+            }
 
             // Loop through the toCopy list and copy each item to the destination
             foreach(var item in toCopy)
             {
-                var path = GetPath(destination.FullPath, item.Name);
+                var path = GetPath(dest.FullPath, item.Name);
                 Copy(item, path);
             }
 
@@ -56,16 +71,16 @@ namespace FileSync.Models
                 foreach(var subdirectory in subdirectories)
                 {
                     // Get the new path within the destination
-                    var path = GetPath(destination.FullPath, subdirectory.Name);
+                    var path = GetPath(dest.FullPath, subdirectory.Name);
 
                     // Create a directory object
                     var newDestination = new Directory(path);
 
                     // If the folder doesn't exist, create it
-                    if(!newDestination.Exists)
-                    {
-                        newDestination.Create();
-                    }
+                    //if(!newDestination.Exists)
+                    //{
+                    //    newDestination.Create();
+                    //}
 
                     // Recurse through this algorithm
                     Sync(newDestination, subdirectory, files);

@@ -136,27 +136,27 @@ namespace FileSync
                 worker.DoWork += delegate (object a, DoWorkEventArgs args)
                 {
                     Dispatcher.Invoke(() => model.SelectFolders());
-                    Dispatcher.Invoke(() => _progress.IsIndeterminate = false);
+                    //Dispatcher.Invoke(() => _progress.IsIndeterminate = false);
 
-                    int num = 0, total = model.Directories.Count;
+                    //int num = 0, total = model.Directories.Count;
 
-                    var collection = new FileCollection();
+                    //var collection = new FileCollection();
 
-                    foreach(var directory in model.Directories)
-                    {
-                        var files = directory.Files;
-                        var subdirs = directory.Directories;
+                    //foreach(var directory in model.Directories)
+                    //{
+                    //    var files = directory.Files;
+                    //    var subdirs = Directory.GetAllContents(directory);
 
-                        collection.AddRange(files);
-                        num += 1;
+                    //    collection.AddRange(files);
+                    //    num += 1;
 
-                        float value = num / (float)total;
-                        value *= 100;
+                    //    float value = num / (float)total;
+                    //    value *= 100;
 
-                        _dispatcher.Invoke(update, value);
-                    }
+                    //    _dispatcher.Invoke(update, value);
+                    //}
 
-                    model.Files = collection;
+                    //model.Files = collection;
                 };
 
                 worker.RunWorkerCompleted += delegate (object b, RunWorkerCompletedEventArgs args)

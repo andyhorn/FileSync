@@ -56,6 +56,8 @@ namespace FileSync.Helpers
                     collection.Add(dir);
                 }
 
+                //collection.Add(new Models.Directory(dialog.))
+
                 return collection;
             }
 
