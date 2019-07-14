@@ -16,7 +16,15 @@ namespace FileSync.ViewModels
         private bool _syncDirectories;
 
         public bool SyncAll { get; set; }
-        public FileCollection Files { get => _files; set => _files = value; }
+        public FileCollection Files
+        {
+            get => _files;
+            set
+            {
+                _files = value;
+                FilesChanged();
+            }
+        }
         public ICollection<IDirectory> Directories { get; set; }
         public string StatusMessage
         {
@@ -26,6 +34,10 @@ namespace FileSync.ViewModels
                 _status = value;
                 OnPropertyChanged("StatusMessage");
             }
+        }
+        public string FileCount
+        {
+            get => $"{Files.Count} files selected";
         }
         public double Maximum
         {
@@ -148,7 +160,7 @@ namespace FileSync.ViewModels
         {
             _files.Clear();
 
-            OnPropertyChanged("Files");
+            FilesChanged();
 
             StatusMessage = "Ready";
         }
@@ -157,12 +169,18 @@ namespace FileSync.ViewModels
         {
             Files.Remove(file);
 
-            OnPropertyChanged("Files");
+            FilesChanged();
         }
 
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void FilesChanged()
+        {
+            OnPropertyChanged("Files");
+            OnPropertyChanged("FileCount");
         }
     }
 }

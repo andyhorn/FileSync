@@ -1,10 +1,8 @@
 ﻿using FileSync.Models;
-using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Windows.Forms;
 
 namespace FileSync.Helpers
 {
@@ -32,7 +30,7 @@ namespace FileSync.Helpers
 
             return null;
         }
-        
+
         public ICollection<IDirectory> PickFolders()
         {
             var dialog = new CommonOpenFileDialog

@@ -55,20 +55,19 @@
                         HorizontalAlignment="Right">
                 <Button Content="Clear" Margin="2 2" Padding="15 5" Name="ButtonClear"
                         Style="{StaticResource AccentedSquareButtonStyle}"/>
-                <Button Content="Sync" Margin="0 2" Padding="15 5" Name="ButtonSync" IsEnabled="False"
+                <Button Content="Sync" Margin="0 2" Padding="15 5" Name="ButtonSync" IsEnabled="{Binding Files.Count}"
                         Style="{StaticResource AccentedSquareButtonStyle}"/>
             </StackPanel>
 
             <Border BorderBrush="Black" BorderThickness="1"
                     Grid.Row="1" Grid.Column="0">
                 <ListView Name="ListViewFileList"
-                          ItemsSource="{Binding Files}">
+                          ItemsSource="{Binding Files}"
+                          MaxHeight="999999999999">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding Name}"/>
                             <GridViewColumn Header="Source Directory" DisplayMemberBinding="{Binding Directory}"/>
-                            <GridViewColumn Header="Last Modified" DisplayMemberBinding="{Binding LastWriteTime}"/>
-                            <GridViewColumn Header="Size (Bytes)" DisplayMemberBinding="{Binding Length}"/>
                             <GridViewColumn Width="100">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
@@ -90,7 +89,8 @@
                 </StackPanel>
                 <TextBlock HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           Name="FileCountMessageBox"/>
+                           Name="FileCountMessageBox"
+                           Text="{Binding FileCount}"/>
             </Grid>
         </Grid>
     </Grid>

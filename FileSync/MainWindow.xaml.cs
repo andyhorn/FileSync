@@ -47,6 +47,7 @@ namespace FileSync
             var file = model.Files.FirstOrDefault(x => x.FullName == tag);
 
             model.Files.Remove(file);
+            model.FilesChanged();
         }
 
         private delegate void UpdateProgress(float value);
@@ -98,7 +99,7 @@ namespace FileSync
                     _progress.Close();
                     SetSyncButton();
 
-                    FileCountMessageBox.Text = $"{model.Files.Count} files selected";
+                    //FileCountMessageBox.Text = $"{model.Files.Count} files selected";
                 };
 
                 _progress.IsIndeterminate = true;
@@ -139,11 +140,10 @@ namespace FileSync
 
                         float value = (float)num / (float)total;
                         value *= 100;
-
-                        //Dispatcher.Invoke(update, value);
+                        
                         _dispatcher.Invoke(update, value);
 
-                        System.Threading.Thread.Sleep(5);
+                        //System.Threading.Thread.Sleep(5);
                     }
 
                     model.Files = collection;
@@ -153,13 +153,12 @@ namespace FileSync
                 {
                     FileListView.ItemsSource = null;
                     FileListView.ItemsSource = model.Files;
-                    model.StatusMessage = "Done!";
-                    FileCountMessageBox.Text = $"{model.Files.Count} files selected";
+                    model.StatusMessage = "Files scanned; ready to sync.";
+                    //FileCountMessageBox.Text = $"{model.Files.Count} files selected";
                     SetSyncButton();
                     _progress.Close();
                 };
-
-                //ProgressBar.IsIndeterminate = true;
+                
                 _progress.IsIndeterminate = true;
                 _progress.Show();
                 worker.RunWorkerAsync();
@@ -184,7 +183,7 @@ namespace FileSync
 
         private void SetSyncButton()
         {
-            SyncButton.IsEnabled = model.Files.Count > 0;
+            //SyncButton.IsEnabled = model.Files.Count > 0;
         }
     }
 }

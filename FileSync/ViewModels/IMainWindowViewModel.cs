@@ -10,6 +10,7 @@ namespace FileSync.ViewModels
         FileCollection Files { get; set; }
         ICollection<IDirectory> Directories { get; set; }
         string StatusMessage { get; set; }
+        string FileCount { get; }
         double Progress { get; set; }
         double Maximum { get; set; }
         double Minimum { get; set; }
@@ -23,5 +24,7 @@ namespace FileSync.ViewModels
         void Clear();
 
         void Remove(FileInfo file);
+
+        void FilesChanged();
     }
 }
