@@ -78,6 +78,14 @@ namespace FileSync
             {
                 var worker = new BackgroundWorker();
 
+                var progress = new Views.ProgressBarWindow
+                {
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Owner = this
+                };
+
+                var dispatcher = progress.Dispatcher;
+
                 worker.DoWork += delegate (object a, DoWorkEventArgs args)
                 {
                     model.SelectFiles();
@@ -89,11 +97,15 @@ namespace FileSync
                     FileListView.ItemsSource = model.Files;
 
                     model.StatusMessage = $"{model.Files.Count} files selected";
-                    ProgressBar.IsIndeterminate = false;
+                    //ProgressBar.IsIndeterminate = false;
+                    progress.IsIndeterminate = false;
+                    progress.Close();
                     SetSyncButton();
                 };
 
-                ProgressBar.IsIndeterminate = true;
+                //ProgressBar.IsIndeterminate = true;
+                progress.IsIndeterminate = true;
+                progress.Show();
                 worker.RunWorkerAsync();
             });
 
@@ -108,7 +120,7 @@ namespace FileSync
                 worker.DoWork += delegate (object a, DoWorkEventArgs args)
                 {
                     Dispatcher.Invoke(() => model.SelectFolders());
-                    Dispatcher.Invoke(() => ProgressBar.IsIndeterminate = false);
+                    //Dispatcher.Invoke(() => ProgressBar.IsIndeterminate = false);
 
                     int num = 0, total = model.Directories.Count;
 
